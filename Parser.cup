@@ -1,0 +1,173 @@
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+
+/* Preliminaries to set up and use the scanner.  */
+parser code {:
+		Lexer lexer;
+
+		public ArithParser(Lexer l) {
+		    // As of CUP v0.11, need to pass Lexer to superclass
+		    super(l);
+		    lexer = l;
+		}
+
+		public void report_error(String message, Object info) {
+		    System.err.println(message);
+		}
+
+		public void syntax_error(Symbol cur_token) {
+		    System.err.print("Line " + lexer.getLine() +
+				     " near char " + lexer.getChar() + ": ");
+		    report_error("Syntax error", cur_token);
+		    System.err.println ("Last token read is " +
+					 lexer.getText());
+		}
+	    :};
+
+init with {:
+	  :};
+
+scan with {:
+		try {
+		    return lexer.next_token();
+		} catch (java.io.IOException ioe) {
+		    System.out.println("Line " + lexer.getLine() + ", pos " +
+				       lexer.getChar() +
+				       ": Unrecognised token");
+		    System.out.println(ioe.getMessage());
+		    throw ioe;
+		}
+	  :};
+
+/* Terminals (tokens returned by the scanner). */
+// keywords
+terminal FUN, IF, ELSE, END;
+
+// special symbols
+terminal LPAREN, RPAREN, SEMI, COLON;
+terminal LBRACE, RBRACE, COMMA;
+
+// arithmetic operators
+terminal PLUS, MINUS, MUL, DIV, MOD, ASSIGN;
+
+// terminals with values
+terminal Integer INT;
+terminal String VAR;
+terminal Cmp COMPARISON;
+terminal Cmp EQUAL;
+
+/* Non terminals */
+non terminal ArithProgram program;
+non terminal StmtSequence stmtList;
+non terminal Statement stmt;
+non terminal StmtDefinition definition;
+
+/* ** Fix these declarations ** */
+non terminal StmtFunDefn funDefn;
+non terminal ExpFunCall funCall;
+non terminal Exp ifThen;
+non terminal ExpCompare logExp;
+non terminal ArrayList<String> paramList;
+non terminal ArrayList<String> paramListE;
+non terminal ArrayList<Exp> argList;
+non terminal ArrayList<Exp> argListE;
+/* **** */
+
+non terminal Exp expression;
+non terminal Exp term;
+non terminal Exp factor;
+non terminal empty;
+
+/* Grammar rules */
+
+program ::= stmtList:s {: RESULT = new ArithProgram(s); :};
+
+stmtList ::= stmtList:lst stmt:s {:
+		lst.add(s); 
+		RESULT = lst;
+		:} |
+	     stmt:s {:
+		RESULT = new StmtSequence(s);
+		:};
+
+stmt ::= definition:d {: RESULT = d; :} |
+	 expression:e {: RESULT = new Statement(e); :} SEMI|
+	 funDefn:f {: RESULT = f; :};
+
+
+funDefn ::= FUN VAR:v LPAREN paramList:pe RPAREN EQUAL LBRACE stmtList:s RBRACE {:
+			RESULT = new StmtFunDefn(v,pe,s); :} |
+		FUN VAR:v LPAREN paramList:pe RPAREN EQUAL expression:e SEMI {:
+			RESULT = new StmtFunDefn(v,pe,e); :};  /* complete this */
+
+paramList ::= paramList:plst COMMA VAR:v {:
+		plst.add(v);
+			RESULT = plst; :} |
+		VAR:v {:
+				ArrayList<String> result = new ArrayList<>();
+				result.add(v);
+				RESULT = result;
+			:} | {: ArrayList<String> result = new ArrayList<>();
+				RESULT = result; :};  /* complete this */
+
+paramListE ::= paramList | empty;
+
+logExp ::= expression:e COMPARISON:c expression:e2{:
+				RESULT = new ExpCompare(e,e2,c);:} |
+			expression:e EQUAL:c expression:e2{:
+				RESULT = new ExpCompare(e,e2,c);:};
+
+ifThen ::= IF logExp:l COLON expression:e ELSE expression:e2 END {:
+			ArrayList<Exp> result = new ArrayList<>();
+				result.add(e);
+				result.add(e2);
+				RESULT = new ExpIfThen(result,l);:}|
+			IF logExp:l COLON expression:e END {:
+			ArrayList<Exp> result = new ArrayList<>();
+				result.add(e);
+				RESULT = new ExpIfThen(result,l);:};
+
+definition ::= VAR:v ASSIGN expression:e SEMI {:
+		   RESULT = new StmtDefinition(v, e);
+		:};
+
+argList ::= argList:alst COMMA expression:e {:
+		alst.add(e);
+			RESULT = alst; :}|
+		expression:e {:
+				ArrayList<Exp> result = new ArrayList<>();
+				result.add(e);
+				RESULT = result;
+			:} | 
+			{: ArrayList<Exp> result = new ArrayList<>();
+				RESULT = result; :};
+
+argListE ::= argList | empty;
+
+funCall ::= VAR:v LPAREN argList:ae RPAREN {:
+			RESULT = new ExpFunCall(v,ae); :};
+
+
+
+expression ::= 	expression:e PLUS term:t {:
+			RESULT = new ExpAdd(e, t); :} |
+		expression:e MINUS term:t {:
+			RESULT = new ExpSub(e, t); :} |
+		term:t {: RESULT = t; :};
+
+term ::= term:t MUL factor:f {:
+		RESULT = new ExpMul(t, f); :} |
+	 term:t DIV factor:f {:
+		RESULT = new ExpDiv(t, f); :} |
+	 term:t MOD factor:f {:
+		RESULT = new ExpMod(t, f); :} |
+	 factor:f {: RESULT = f; :};
+
+factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
+	   VAR:var {: RESULT = new ExpVar(var); :} |
+	   funCall:fc {: RESULT = fc; :}|
+		ifThen:i {: RESULT = i; :}|
+	   LPAREN expression:e RPAREN {: RESULT = e; :}	;
+
+empty ::= ;
