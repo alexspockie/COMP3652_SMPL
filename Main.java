@@ -59,7 +59,7 @@ public class Main {
 	    AssessmentVisitor<S, T> walker;	// to be set
 	    if (walkerName.equals("")) {
 		// walker = new ArithInterpreter();
-		walkerName = "ArithInterpereter";
+		walkerName = "ArithInterpreter";
 	    } 
 	    Class<? extends AssessmentVisitor<S, T>> wclass =
 		(Class<? extends AssessmentVisitor<S, T>>) Class.forName(walkerName);

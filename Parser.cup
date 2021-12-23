@@ -42,14 +42,23 @@ scan with {:
 
 /* Terminals (tokens returned by the scanner). */
 // keywords
-terminal FUN, IF, ELSE, END;
+terminal PROC, CALL, LET, DEF, IF, THEN, ELSE, CASE, READ, READINT, PRINT, PRINTLN;
 
 // special symbols
-terminal LPAREN, RPAREN, SEMI, COLON;
-terminal LBRACE, RBRACE, COMMA;
+terminal LPAREN, RPAREN, SEMI, COLON, AT;
+terminal LBRACE, RBRACE, COMMA, LBRACKET, RBRACKET;
 
 // arithmetic operators
-terminal PLUS, MINUS, MUL, DIV, MOD, ASSIGN;
+terminal PLUS, MINUS, MUL, DIV, MOD, POW, ASSIGN;
+
+// logical operators
+terminal AND, OR, NOT;
+
+// bitwise operators
+terminal AMP, BAR, TILDE;
+
+// comments
+terminal LCOM, BCOMS , BCOME;
 
 // terminals with values
 terminal Integer INT;
@@ -62,6 +71,7 @@ non terminal ArithProgram program;
 non terminal StmtSequence stmtList;
 non terminal Statement stmt;
 non terminal StmtDefinition definition;
+non terminal mulDef;
 
 /* ** Fix these declarations ** */
 non terminal StmtFunDefn funDefn;
@@ -72,6 +82,22 @@ non terminal ArrayList<String> paramList;
 non terminal ArrayList<String> paramListE;
 non terminal ArrayList<Exp> argList;
 non terminal ArrayList<Exp> argListE;
+non terminal String bind;
+non terminal ArrayList<String> bindList;
+non terminal String pred;
+non terminal ArrayList<String> predList;
+non terminal list;
+non terminal vector;
+non terminal vectorCall;
+non terminal proc;
+non terminal call;
+non terminal let;
+non terminal def;
+non terminal case;
+non terminal expSeq;
+non terminal mulExp;
+non terminal read;
+non terminal comment;
 /* **** */
 
 non terminal Exp expression;
@@ -95,11 +121,12 @@ stmt ::= definition:d {: RESULT = d; :} |
 	 expression:e {: RESULT = new Statement(e); :} SEMI|
 	 funDefn:f {: RESULT = f; :};
 
-
-funDefn ::= FUN VAR:v LPAREN paramList:pe RPAREN EQUAL LBRACE stmtList:s RBRACE {:
+/*This function definintion no longer valid*/
+/*funDefn ::= VAR:v LPAREN paramList:pe RPAREN EQUAL LBRACE stmtList:s RBRACE {:
 			RESULT = new StmtFunDefn(v,pe,s); :} |
-		FUN VAR:v LPAREN paramList:pe RPAREN EQUAL expression:e SEMI {:
-			RESULT = new StmtFunDefn(v,pe,e); :};  /* complete this */
+		 VAR:v LPAREN paramList:pe RPAREN EQUAL expression:e SEMI {:
+			RESULT = new StmtFunDefn(v,pe,e); :}; */
+
 
 paramList ::= paramList:plst COMMA VAR:v {:
 		plst.add(v);
@@ -113,24 +140,83 @@ paramList ::= paramList:plst COMMA VAR:v {:
 
 paramListE ::= paramList | empty;
 
+//used in let definition
+bind ::= VAR:v EQUAL expression:e {: RESULT = null; :};
+
+bindList ::= bindList:blst COMMA bind:b {: blst.add(b);
+			RESULT = blst; :} |
+		bind:b {:
+				ArrayList<String> result = new ArrayList<>();
+				result.add(b);
+				RESULT = result;
+			:} | {: ArrayList<String> result = new ArrayList<>();
+				RESULT = result; :};
+
+// used in case definintion
+pred ::= logExp COLON expression:e SEMI{: RESULT = null; :} |
+		ELSE COLON expression:e SEMI{: RESULT = null; :};
+
+predList ::= predList:plst COMMA pred:p {: plst.add(p);
+			RESULT = plst; :} |
+			pred:p {:
+				ArrayList<String> result = new ArrayList<>();
+				result.add(p);
+				RESULT = result; :} |
+			{: ArrayList<String> result = new ArrayList<>();
+				RESULT = result; :};
+
+list ::= LBRACKET argListE:alst RBRACKET {: RESULT = null; :};
+
+vector ::= LBRACKET COLON list:lst COLON RBRACKET {: RESULT = null; :};
+
+vectorCall ::= vector:v LBRACKET expression:e RBRACKET	{: RESULT = null; :};			
+
+/* New keyword functions */
+proc ::= PROC VAR:v stmtList:body {: RESULT = null; :} |
+		PROC LPAREN LBRACKET paramListE:plst RBRACKET RPAREN stmtList:body SEMI{: RESULT = null; :} | 
+		PROC LPAREN paramListE:plst COMMA list:lst RPAREN stmtList:body SEMI{: RESULT = null; :};
+
+call ::= CALL LPAREN proc:p COMMA argListE RPAREN {: RESULT = null; :};
+
+let ::= LET LPAREN bindList:blst RPAREN stmtList:body {: RESULT = null; :};
+
 logExp ::= expression:e COMPARISON:c expression:e2{:
 				RESULT = new ExpCompare(e,e2,c);:} |
 			expression:e EQUAL:c expression:e2{:
 				RESULT = new ExpCompare(e,e2,c);:};
 
-ifThen ::= IF logExp:l COLON expression:e ELSE expression:e2 END {:
+ifThen ::= IF logExp:l THEN expression:e ELSE expression:e2 {:
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				result.add(e2);
 				RESULT = new ExpIfThen(result,l);:}|
-			IF logExp:l COLON expression:e END {:
+			IF logExp:l THEN expression:e {:
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				RESULT = new ExpIfThen(result,l);:};
 
+case ::= CASE LBRACE predList:plst RBRACE {: RESULT = null; :};
+
+expSeq ::= LBRACE argList:alst RBRACE {: RESULT = null; :};
+
+mulExp ::= LPAREN argList: alst RPAREN {: RESULT = null; :};
+
+def ::= DEF VAR:v expression:e {: RESULT = null; :};
+				
 definition ::= VAR:v ASSIGN expression:e SEMI {:
 		   RESULT = new StmtDefinition(v, e);
-		:};
+		:}/*|
+			paramList:plst ASSIGN argList:alst SEMI{: RESULT = null; :}*/;
+
+mulDef ::= paramList:plst ASSIGN argList:alst SEMI{: RESULT = null; :};
+
+read ::= READ LPAREN RPAREN {: RESULT = null; :}|
+		READINT LPAREN RPAREN {:RESULT = null; :};
+
+comment ::= LCOM {:RESULT = null; :}|
+			BCOMS BCOME {:RESULT = null; :};
+
+/* End of new keyword functions*/
 
 argList ::= argList:alst COMMA expression:e {:
 		alst.add(e);
@@ -143,11 +229,11 @@ argList ::= argList:alst COMMA expression:e {:
 			{: ArrayList<Exp> result = new ArrayList<>();
 				RESULT = result; :};
 
+
 argListE ::= argList | empty;
 
 funCall ::= VAR:v LPAREN argList:ae RPAREN {:
 			RESULT = new ExpFunCall(v,ae); :};
-
 
 
 expression ::= 	expression:e PLUS term:t {:
@@ -162,12 +248,10 @@ term ::= term:t MUL factor:f {:
 		RESULT = new ExpDiv(t, f); :} |
 	 term:t MOD factor:f {:
 		RESULT = new ExpMod(t, f); :} |
-	 factor:f {: RESULT = f; :};
+	 factor:f {: RESULT = f; :}; 
 
 factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 	   VAR:var {: RESULT = new ExpVar(var); :} |
-	   funCall:fc {: RESULT = fc; :}|
-		ifThen:i {: RESULT = i; :}|
 	   LPAREN expression:e RPAREN {: RESULT = e; :}	;
 
 empty ::= ;
