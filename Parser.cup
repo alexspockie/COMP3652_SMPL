@@ -81,6 +81,8 @@ non terminal mulDef;
 non terminal StmtFunDefn funDefn;
 non terminal ExpFunCall funCall;
 non terminal Exp ifThen;
+non terminal Exp ifTheno;		//open
+non terminal Exp ifThenc;		//closed
 non terminal ExpCompare logExp;
 non terminal ArrayList<String> paramList;
 non terminal ArrayList<String> paramListE;
@@ -105,6 +107,9 @@ non terminal comment;
 /* **** */
 
 non terminal Exp expression;
+non terminal Exp exptop;		//top level exp
+non terminal Exp expo;      	//open
+non terminal Exp expc;			//closed
 non terminal Exp term;
 non terminal Exp factor;
 non terminal empty;
@@ -122,8 +127,18 @@ stmtList ::= stmtList:lst stmt:s {:
 		:};
 
 stmt ::= definition:d {: RESULT = d; :} |
-	 expression:e {: RESULT = new Statement(e); :} SEMI|
-	 funDefn:f {: RESULT = f; :};
+	 //expression:e {: RESULT = new Statement(e); :} SEMI|
+	 exptop:e {: RESULT = new Statement(e); :}/*|
+	 funDefn:f {: RESULT = f; :}|
+	 def:d {:RESULT = d; :}*/;
+
+exptop ::= expo:e {: RESULT = e; :}|
+			expc:e {: RESULT = e; :};
+
+expo ::= ifTheno:i {: RESULT = i; :};
+
+expc ::= expression:e {: RESULT = e; :}|
+		ifThenc:i {: RESULT = i; :};
 
 /*This function definintion no longer valid*/
 /*funDefn ::= VAR:v LPAREN paramList:pe RPAREN EQUAL LBRACE stmtList:s RBRACE {:
@@ -177,8 +192,8 @@ vectorCall ::= vector:v LBRACKET expression:e RBRACKET	{: RESULT = null; :};
 
 /* New keyword functions */
 proc ::= PROC VAR:v stmtList:body {: RESULT = null; :} |
-		PROC LPAREN LBRACKET paramListE:plst RBRACKET RPAREN stmtList:body SEMI{: RESULT = null; :} | 
-		PROC LPAREN paramListE:plst COMMA list:lst RPAREN stmtList:body SEMI{: RESULT = null; :};
+		PROC LPAREN LBRACKET paramListE:plst RBRACKET RPAREN stmtList:body {: RESULT = null; :} | 
+		PROC LPAREN paramListE:plst COMMA list:lst RPAREN stmtList:body {: RESULT = null; :};
 
 call ::= CALL LPAREN proc:p COMMA argListE RPAREN {: RESULT = null; :};
 
@@ -189,15 +204,31 @@ logExp ::= expression:e COMPARISON:c expression:e2{:
 			expression:e EQUAL:c expression:e2{:
 				RESULT = new ExpCompare(e,e2,c);:};
 
-ifThen ::= IF logExp:l THEN expression:e ELSE expression:e2 {:
+/*ifThen ::= IF logExp:l THEN expression:e ELSE expression:e2 END {:
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				result.add(e2);
 				RESULT = new ExpIfThen(result,l);:}|
-			IF logExp:l THEN expression:e {:
+			IF logExp:l THEN expression:e END{:
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
-				RESULT = new ExpIfThen(result,l);:};
+				RESULT = new ExpIfThen(result,l);:};*/
+
+ifTheno ::= IF logExp:l THEN exptop:e {:
+			ArrayList<Exp> result = new ArrayList<>();
+				result.add(e);
+				RESULT = new ExpIfThen(result,l);:}|
+			IF logExp:l THEN expc:e ELSE expo:e2 {:
+			ArrayList<Exp> result = new ArrayList<>();
+				result.add(e);
+				result.add(e2);
+				RESULT = new ExpIfThen(result,l);:}; //open
+
+ifThenc ::= IF logExp:l THEN expc:e ELSE expc:e2 {:
+			ArrayList<Exp> result = new ArrayList<>();
+				result.add(e);
+				result.add(e2);
+				RESULT = new ExpIfThen(result,l);:}; //closed
 
 case ::= CASE LBRACE predList:plst RBRACE {: RESULT = null; :};
 
@@ -207,12 +238,12 @@ mulExp ::= LPAREN argList: alst RPAREN {: RESULT = null; :};
 
 def ::= DEF VAR:v expression:e {: RESULT = null; :};
 				
-definition ::= VAR:v ASSIGN expression:e SEMI {:
+definition ::= VAR:v ASSIGN expression:e {:
 		   RESULT = new StmtDefinition(v, e);
 		:}/*|
-			paramList:plst ASSIGN argList:alst SEMI{: RESULT = null; :}*/;
+			paramList:plst ASSIGN argList:alst {: RESULT = null; :}*/;
 
-mulDef ::= paramList:plst ASSIGN argList:alst SEMI{: RESULT = null; :};
+//mulDef ::= paramList:plst ASSIGN argList:alst {: RESULT = null; :};
 
 read ::= READ LPAREN RPAREN {: RESULT = null; :}|
 		READINT LPAREN RPAREN {:RESULT = null; :};
@@ -236,8 +267,8 @@ argList ::= argList:alst COMMA expression:e {:
 
 argListE ::= argList | empty;
 
-funCall ::= VAR:v LPAREN argList:ae RPAREN {:
-			RESULT = new ExpFunCall(v,ae); :};
+//funCall ::= VAR:v LPAREN argList:ae RPAREN {:
+			//RESULT = new ExpFunCall(v,ae); :};
 
 
 expression ::= 	expression:e PLUS term:t {:
@@ -256,6 +287,8 @@ term ::= term:t MUL factor:f {:
 
 factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 	   VAR:var {: RESULT = new ExpVar(var); :} |
-	   LPAREN expression:e RPAREN {: RESULT = e; :}	;
+	   LPAREN expression:e RPAREN {: RESULT = e; :}|
+	   ifThen:i {:RESULT = i; :}|
+	   funCall:fc {: RESULT = fc; :};
 
 empty ::= ;
