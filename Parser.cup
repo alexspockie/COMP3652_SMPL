@@ -45,7 +45,7 @@ scan with {:
 terminal PROC, CALL, LET, DEF, IF, THEN, ELSE, CASE, READ, READINT, PRINT, PRINTLN;
 
 // special symbols
-terminal LPAREN, RPAREN, SEMI, COLON, AT;
+terminal LPAREN, RPAREN, SEMI, COLON, AT, ELIST, DQUOTE;
 terminal LBRACE, RBRACE, COMMA, LBRACKET, RBRACKET;
 
 // arithmetic operators
@@ -65,6 +65,10 @@ terminal Integer INT;
 terminal String VAR;
 terminal Cmp COMPARISON;
 terminal Cmp EQUAL;
+terminal Double FLOAT;
+terminal Character CHAR;
+terminal String STRING;
+terminal Boolean BOOLLIT;
 
 /* Non terminals */
 non terminal ArithProgram program;
