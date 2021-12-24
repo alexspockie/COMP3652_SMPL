@@ -45,7 +45,7 @@ scan with {:
 terminal PROC, CALL, LET, DEF, IF, THEN, ELSE, CASE, READ, READINT, PRINT, PRINTLN;
 
 // special symbols
-terminal LPAREN, RPAREN, SEMI, COLON, AT, ELIST;
+terminal LPAREN, RPAREN, SEMI, COLON, AT, ELIST, DQUOTE;
 terminal LBRACE, RBRACE, COMMA, LBRACKET, RBRACKET;
 
 // arithmetic operators
