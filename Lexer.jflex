@@ -28,6 +28,8 @@ import lib3652.util.TokenException;
 %line
 
 %{
+	StringBuffer buffer = new StringBuffer();
+
     public int getChar() {
 	return yychar + 1;
     }
@@ -62,6 +64,9 @@ ndmiddle = [^\(\)\[\]\{\}\"\',:0-9]
 ndbegin = [^\(\)\[\]\{\}\"\',:#0-9]
 
 var = ({ndbegin}+{ban}*) | ([0-9]+{ban}*{ndmiddle}+{ban}*)
+
+%state STRING
+
 
 %%
 
@@ -123,16 +128,51 @@ var = ({ndbegin}+{ban}*) | ([0-9]+{ban}*{ndmiddle}+{ban}*)
 <YYINITIAL>	"read" {return new Symbol(sym.READ);}
 <YYINITIAL>	"readint" {return new Symbol(sym.READINT);}
 
+<YYINITIAL> "#t" { return new Symbol(sym.BOOLLIT, true);}
+<YYINITIAL> "#f" { return new Symbol(sym.BOOLLIT, false);}
+
+<YYINITIAL> "#e" { return new Symbol(sym.ELIST);}
+
 <YYINITIAL>    [0-9]+ {
 	       // INTEGER
 	       return new Symbol(sym.INT, 
-				 new Integer(yytext()));
+				new Integer(yytext()));
 		}
+
+<YYINITIAL> #x[0-9A-F]+ {return new Symbol(sym.INT, Integer.parseInt(yytext().substring(2), 16));}
+
+<YYINITIAL> #b[0-1]+ {return new Symbol(sym.INT, Integer.parseInt(yytext().substring(2), 2));}
+
+<YYINITIAL> ([0-9]+\.[0.9]+)|(\.[0.9]+)|([0-9]+\.) {
+			return new Symbol(sym.FLOAT, new Double(yytext()));
+			}
+
+<YYINITIAL> (#c[A-ZA-Z]) | (#c\\[n\t]) {return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
+
+<YYINITIAL> #u[A-F0-9]{4} {return new Symbol(sym.CHAR, Character.toChars(Integer.parseInt(yytext().substring(2)));}
+
+
+<YYINITIAL> \" {
+				buffer.setLength(0); 
+				yybegin(STRING); 
+				return new Symbol(sym.DQUOTE, yytext());
+			}
 
 <YYINITIAL>    {var} {
 	       // VAR
 	       return new Symbol(sym.VAR, yytext());
 		}
+
+<STRING> (\\[t\n]) | ([A-Za-z0-9/';:.,><[]{}=+-_|*&%$#@!~`]|\^) | {cc} { 
+	// unsure if more should be done with this
+		buffer.append(yytext());
+	}
+
+<STRING> \" {
+				yybegin(YYINITIAL);
+				return new Symbol(sym.STRING,buffer);
+			}
+
 
 <YYINITIAL>    \S		{ // error situation
 	       String msg = String.format("Unrecognised Token: %s", yytext());

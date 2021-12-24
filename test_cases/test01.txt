@@ -1,0 +1,48 @@
+def fact proc(n)
+// return factorial n
+if n <= 1
+then 1
+else n * fact(n - 1);
+def fib proc(n)
+/* return the nth fibonacci no.*/
+if n <= 1
+then 1
+else fib(n - 1) + fib(n - 2);
+def map proc(f, lst)
+/* return a new list containing
+f(x) for each x in lst */
+if lst = #e
+then #e
+else pair(f(car(lst)),
+map(f, cdr(lst)));
+def gcd proc(a, b)
+/* Euclidean alg. for gcd */
+case {
+a < b: gcd(b, a);
+b = 0: a;
+else : gcd(b, a % b);
+}
+
+def foldr proc(op, base, lst)
+/* fold right LST using binary operator OP
+and base value BASE */
+if lst = #e
+then base
+else op(car(lst),
+foldr(op, base, cdr(lst)));
+def append proc(l1, l2)
+/* copy l1 and then attach l2 to it
+and return the resulting list. */
+if l1 = #e
+then l2
+else cons(car(l1),
+append(cdr(l1), l2));
+def vecMap proc(f, v)
+/* return new vector containing f(x)
+for each x in v */
+[: size(v): proc(i) f(v[i]) :];
+def vecAppend proc(v1, v2)
+/* append v2 onto the end of v1, return
+result in a new vector */
+[: size(v1): proc(i) v1[i],
+size(v2): proc(i) v2[i] :];
