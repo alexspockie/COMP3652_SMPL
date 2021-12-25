@@ -9,19 +9,18 @@ import java.util.*;
  * @author <a href="mailto:dcoore@uwimona.edu.jm">Daniel Coore</a>
  * @version 1.0
  */
-public class Environment<T> {
+public class Environment {
 
-    Environment<T> parent;
-    HashMap<String, T> dictionary;
-    Map<String, Closure> funDict = new HashMap<String, Closure>();
+    Environment parent;
+    HashMap<String, SMPLDataType> dictionary;
 
     /**
      * Create a new (empty) top level Environment.
      *
      */
     public Environment() {
-	parent = null;
-	dictionary = new HashMap<>();
+        parent = null;
+        dictionary = new HashMap<>();
     }
 
     /**
@@ -29,17 +28,17 @@ public class Environment<T> {
      * initialised with the given collection of bindings
      * (presented as separate arrays of names and values).
      *
-     * @param ids the collection of identifiers to be bound.
+     * @param ids    the collection of identifiers to be bound.
      * @param values the corresponding collection of values
-     * for the identifiers.  Note that the two arrays must
-     * have the same length.
+     *               for the identifiers. Note that the two arrays must
+     *               have the same length.
      */
-    public Environment(Environment<T> parent, String[] ids, T[] values) {
-	this.parent = parent;
-	dictionary = new HashMap<>();
-	for (int i = 0; i < ids.length; i++) {
-	    dictionary.put(ids[i], values[i]);
-	}
+    public Environment(Environment parent, String[] ids, SMPLDataType[] values) {
+        this.parent = parent;
+        dictionary = new HashMap<>();
+        for (int i = 0; i < ids.length; i++) {
+            dictionary.put(ids[i], values[i]);
+        }
     }
 
     /**
@@ -47,18 +46,18 @@ public class Environment<T> {
      * initialised with the given collection of bindings
      * (presented as separate array lists of names and values).
      *
-     * @param ids the collection of identifiers to be bound.
+     * @param ids    the collection of identifiers to be bound.
      * @param values the corresponding collection of values
-     * for the identifiers.  Note that the two lists must
-     * have the same length.
+     *               for the identifiers. Note that the two lists must
+     *               have the same length.
      */
-    public Environment(Environment<T> parent, ArrayList<String> ids,
-		       ArrayList<T> values) {
-	this.parent = parent;
-	dictionary = new HashMap<>();
-	for (int i = 0; i < ids.size(); i++) {
-	    dictionary.put(ids.get(i), values.get(i));
-	}
+    public Environment(Environment parent, ArrayList<String> ids,
+            ArrayList<? extends SMPLDataType> values) {
+        this.parent = parent;
+        dictionary = new HashMap<>();
+        for (int i = 0; i < ids.size(); i++) {
+            dictionary.put(ids.get(i), values.get(i));
+        }
     }
 
     /**
@@ -67,42 +66,22 @@ public class Environment<T> {
      *
      * @return the <code>Environment</code> created.
      */
-    public static <T> Environment<T> makeGlobalEnv(Class<T> cls) {
-	Environment<T> result =  new Environment<T>();
-	// add definitions for any primitive procedures or
-	// constants here
-	return result;
+    public static <T> Environment makeGlobalEnv() {
+        Environment result = new Environment();
+        // add definitions for any primitive procedures or
+        // constants here
+        return result;
     }
 
     /**
      * Store a binding for the given identifier to the given
      * int within this environment.
      *
-     * @param id the name to be bound
+     * @param id    the name to be bound
      * @param value the value to which the name is bound.
      */
-    public void put(String id, T value) {
-	dictionary.put(id, value);
-    }
-
-    public void addClosure(String id, Closure close){
-        funDict.put(id,close);
-    }
-
-    public Closure getClosure(String id){
-        Closure result = funDict.get(id);
-        if (result == null){
-            if (parent == null){
-                System.out.println("Closure doesnt exists");
-            }
-            else {
-                return parent.getClosure(id);
-            }
-        }
-        else {
-            return result;
-        }
-    return null;
+    public void put(String id, SMPLDataType value) {
+        dictionary.put(id, value);
     }
 
     /**
@@ -110,18 +89,18 @@ public class Environment<T> {
      *
      * @param id the identifier.
      * @return the int associated with the identifier in
-     * this environment.
+     *         this environment.
      * @exception Exception if <code>id</code> is unbound
      */
-    public T get(String id) throws UnboundVarException {
-	T result = dictionary.get(id);
-	if (result == null)
-	    if (parent == null)
-		throw new UnboundVarException(id);
-	    else
-		return parent.get(id);
-	else
-	    return result;
+    public SMPLDataType get(String id) throws UnboundVarException {
+        SMPLDataType result = dictionary.get(id);
+        if (result == null)
+            if (parent == null)
+                throw new UnboundVarException(id);
+            else
+                return parent.get(id);
+        else
+            return result;
     }
 
     /**
@@ -131,13 +110,13 @@ public class Environment<T> {
      *         environment.
      */
     public String toString() {
-	StringBuffer result = new StringBuffer();
+        StringBuffer result = new StringBuffer();
 
-	Iterator iter = dictionary.keySet().iterator();
-	while (iter.hasNext()) {
-	    result = result.append(iter.next().toString());
-	}
-	return result.toString();
+        Iterator iter = dictionary.keySet().iterator();
+        while (iter.hasNext()) {
+            result = result.append(iter.next().toString());
+        }
+        return result.toString();
     }
 
 }

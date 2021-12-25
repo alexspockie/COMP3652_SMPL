@@ -1,49 +1,47 @@
 import java.util.*;
 
-public class Evaluator implements Visitor<Environment<Double>, Double> {
+public class Evaluator implements Visitor<Environment, SMPLDataType> {
     /* For this visitor, the argument passed to all visit
        methods will be the environment object that used to
        be passed to the eval method in the first style of
        implementation. */
 
     // allocate state here
-    protected Double result;	// result of evaluation
-    private Double defaultValue;
-    private Class<Double> myClass;
+    protected SMPLDataType result;	// result of evaluation
+    private SMPLDataType defaultValue;
 
     protected Evaluator() {
-	this(Double.NaN);
+	this(new SMPLFloat(Double.NaN));
     }
 
-    public Evaluator(Double defaultVal) {
+    public Evaluator(SMPLDataType defaultVal) {
 	// perform initialisations here
 	this.defaultValue = defaultVal;
-	myClass = Double.class;
 	result = defaultValue;
     }
 
-    public Environment<Double> getDefaultState() {
-	return Environment.makeGlobalEnv(myClass);
+    public Environment getDefaultState() {
+	return Environment.makeGlobalEnv();
     }
 
-    public Double visitArithProgram(ArithProgram p, Environment<Double> env)
+    public SMPLDataType visitArithProgram(ArithProgram p, Environment env)
 	throws VisitException {
 	result = p.getSeq().visit(this, env);
 	return result;
     }
 
-    public Double visitStatement(Statement s, Environment<Double> env)
+    public SMPLDataType visitStatement(Statement s, Environment env)
     throws VisitException {
 	return s.getExp().visit(this, env);
     }
 
-    public Double visitStmtSequence(StmtSequence sseq, Environment<Double> env)
+    public SMPLDataType visitStmtSequence(StmtSequence sseq, Environment env)
 	throws VisitException {
 	// remember that env is the environment
 	Statement s;
 	ArrayList seq = sseq.getSeq();
 	Iterator iter = seq.iterator();
-	Double result = defaultValue;
+	SMPLDataType result = defaultValue;
 	while(iter.hasNext()) {
 	    s = (Statement) iter.next();
 	    result = s.visit(this, env);
@@ -52,30 +50,30 @@ public class Evaluator implements Visitor<Environment<Double>, Double> {
 	return result;
     }
 
-    public Double visitStmtDefinition(StmtDefinition sd,
-				      Environment<Double> env)
+    public SMPLDataType visitStmtDefinition(StmtDefinition sd,
+				      Environment env)
 	throws VisitException {
-	Double result;
+	SMPLDataType result;
 	result = sd.getExp().visit(this, env);
 	env.put(sd.getVar(), result);
 	return result;
     }
 
-    public Double visitStmtFunDefn(StmtFunDefn fd, Environment<Double> env)
+    public SMPLDataType visitStmtFunDefn(StmtFunDefn fd, Environment env)
 	throws VisitException {
 	// to be implemented
 		Closure close = new Closure(fd,env);
-    	env.addClosure(fd.getVar(),close);
+    	env.put(fd.getVar(),new SMPLProcedure(close));
 	return 0D;
     }
 
-    public Double visitExpFunCall(ExpFunCall fc, Environment<Double> env)
+    public SMPLDataType visitExpFunCall(ExpFunCall fc, Environment env)
 	throws VisitException {
 	// to be implemented
-		Closure close = env.getClosure(fc.getVar());
+		Closure close = SMPLProcedure.class.cast(env.get(fc.getVar())).getValue();
     	StmtFunDefn fun = close.getFunction();
     	ArrayList<String> params = fun.getParams();
-    	ArrayList<Double> vals = new ArrayList<Double>();
+    	ArrayList<SMPLDataType> vals = new ArrayList<SMPLDataType>();
     	ArrayList<Exp> args = fc.getArgList();
     	for (int i=0;i<args.size();i++){
     		vals.add(args.get(i).visit(this,env));
@@ -87,20 +85,20 @@ public class Evaluator implements Visitor<Environment<Double>, Double> {
     		return fun.getStatements().visit(this,env2);
     }
 
-    public Double visitExpCompare(ExpCompare exp, Environment<Double> env)
+    public SMPLDataType visitExpCompare(ExpCompare exp, Environment env)
 	throws VisitException {
-	Double val1, val2;
+	SMPLDataType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
-	if (exp.getC().apply(val1,val2))
-		return 1D;
-	return 0D;
+	if (exp.getC().apply(val1,val2).getValue())
+		return new SMPLFloat(1D);
+	return new SMPLFloat(0D);
 
     }
 
-    public Double visitExpIfThen(ExpIfThen exp, Environment<Double> env)
+    public SMPLDataType visitExpIfThen(ExpIfThen exp, Environment env)
 	throws VisitException {
-	if (exp.getLog().visit(this,env) == 1)
+	if (exp.getLog().visit(this,env).relationalCmp(Cmp.EQ, new SMPLInt(1)).getValue())
 		return exp.getArgs().get(0).visit(this, env);
 	if (exp.getArgs().size()>1)
 		return exp.getArgs().get(1).visit(this, env);
@@ -108,52 +106,52 @@ public class Evaluator implements Visitor<Environment<Double>, Double> {
 
     }
 
-    public Double visitExpAdd(ExpAdd exp, Environment<Double> env)
+    public SMPLDataType visitExpAdd(ExpAdd exp, Environment env)
 	throws VisitException {
-	Double val1, val2;
+	SMPLDataType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
 	return val1 + val2;
 	}
 
-    public Double visitExpSub(ExpSub exp, Environment<Double> env)
+    public SMPLDataType visitExpSub(ExpSub exp, Environment env)
 	throws VisitException {
-	Double val1, val2;
+	SMPLDataType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
 	return val1 - val2;
     }
 
-    public Double visitExpMul(ExpMul exp, Environment<Double> env)
+    public SMPLDataType visitExpMul(ExpMul exp, Environment env)
 	throws VisitException {
-	Double val1, val2;
+	SMPLDataType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
 	return val1 * val2;
     }
 
-    public Double visitExpDiv(ExpDiv exp, Environment<Double> env)
+    public SMPLDataType visitExpDiv(ExpDiv exp, Environment env)
 	throws VisitException {
-	Double val1, val2;
+	SMPLDataType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
 	return val1 / val2;
     }
 
-    public Double visitExpMod(ExpMod exp, Environment<Double> env)
+    public SMPLDataType visitExpMod(ExpMod exp, Environment env)
 	throws VisitException {
-	Double val1, val2;
+	SMPLDataType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
 	return val1 % val2;
     }
 
-    public Double visitExpLit(ExpLit exp, Environment<Double> env)
+    public SMPLDataType visitExpLit(ExpLit exp, Environment env)
 	throws VisitException {
-	return new Double(exp.getVal());
+	return exp.getVal();
     }
 
-    public Double visitExpVar(ExpVar exp, Environment<Double> env)
+    public SMPLDataType visitExpVar(ExpVar exp, Environment env)
 	throws VisitException {
 	return env.get(exp.getVar());
     }
