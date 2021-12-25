@@ -1,5 +1,5 @@
 /**
- * 
+ * Represents Procedures
  */
 public class SMPLProcedure extends SMPLDataType<Closure>{
 

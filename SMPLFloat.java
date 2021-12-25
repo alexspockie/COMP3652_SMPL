@@ -1,3 +1,6 @@
+/**
+ * Represents floating point numbers
+ */
 public class SMPLFloat extends SMPLNumber<Double> {
 
     public SMPLFloat(Double data) {

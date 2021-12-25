@@ -1,5 +1,5 @@
 /**
- * Represents all data types in SMPL
+ * Represents all integer like types in SMPL
  */
 abstract public class SMPLIntegral<T> extends SMPLNumber<T> {
 

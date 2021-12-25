@@ -1,5 +1,5 @@
 /**
- * 
+ * Represents integers
  */
 public class SMPLInt extends SMPLIntegral<Integer> {
 

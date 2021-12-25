@@ -66,7 +66,7 @@ public class Environment {
      *
      * @return the <code>Environment</code> created.
      */
-    public static <T> Environment makeGlobalEnv() {
+    public static Environment makeGlobalEnv() {
         Environment result = new Environment();
         // add definitions for any primitive procedures or
         // constants here

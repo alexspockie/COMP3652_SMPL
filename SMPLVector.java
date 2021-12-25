@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * 
+ * Represents vectors
  */
 public class SMPLVector extends SMPLDataType<ArrayList<? extends SMPLDataType>> {
 

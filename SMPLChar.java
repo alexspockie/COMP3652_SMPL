@@ -1,5 +1,5 @@
 /**
- * 
+ * Represents a character
  */
 public class SMPLChar extends SMPLIntegral<Character>{
 

@@ -1,5 +1,5 @@
 /**
- * 
+ * Represents strings
  */
 public class SMPLString extends SMPLDataType<String>{
 

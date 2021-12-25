@@ -53,6 +53,14 @@ public enum Cmp {
 		symbol = sym;
 	}
 
+	/**
+	 * Applies this comparision operator to arg1 and arg2
+	 * @param <T> An SMPLDataType
+	 * @param arg1
+	 * @param arg2
+	 * @return SMPLBoolean of the comparison result
+	 * @throws NoSuchMethodException if this comparison is not allowed between the types of arg1 and/or arg2
+	 */
 	public abstract <T extends SMPLDataType> SMPLBoolean apply(T arg1, T arg2) throws NoSuchMethodException;
 
 	public String toString() {

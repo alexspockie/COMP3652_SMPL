@@ -1,5 +1,5 @@
 /**
- * 
+ * Represents a boolean
  */
 public class SMPLBoolean extends SMPLDataType<Boolean> {
 
