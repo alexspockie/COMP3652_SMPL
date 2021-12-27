@@ -57,13 +57,20 @@ alpha = [a-zA-Z_]
 
 alphanum = {alpha}|[0-9]
 
-ban = [^\(\)\[\]\{\}\"\',:]
+//ban = [^\(\)\[\]\{\}\"\',:]
 
-ndmiddle = [^\(\)\[\]\{\}\"\',:0-9]
+//ndmiddle = [^\(\)\[\]\{\}\"\',:0-9]
 
-ndbegin = [^\(\)\[\]\{\}\"\',:#0-9]
+//ndbegin = [^\(\)\[\]\{\}\"\',:#0-9]
 
-var = ({ndbegin}+{ban}*) | ([0-9]+{ban}*{ndmiddle}+{ban}*)
+ndbegin = [a-zA-z\+\-\*\/\%\^\?\.\!]
+
+ndmiddle = [a-zA-z\+\-\*\/\%\^\?\.\!\#]
+
+ban = [a-zA-z0-9\+\-\*\/\%\^\?\.\!\#]
+
+
+var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 
 %state STRING
 
