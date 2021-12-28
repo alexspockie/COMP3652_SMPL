@@ -25,7 +25,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
     }
 
     public SMPLDataType visitArithProgram(ArithProgram p, Environment env)
-	throws VisitException {
+	throws VisitException, NoSuchMethodException {
 	result = p.getSeq().visit(this, env);
 	return result;
     }

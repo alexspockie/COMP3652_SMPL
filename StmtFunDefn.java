@@ -29,9 +29,9 @@ public class StmtFunDefn extends Statement {
     	return "";
     }
 
-    public <S, T> T visit(Visitor<S,T> v, S arg) throws VisitException {
+    /*public <S, T> T visit(Visitor<S,T> v, S arg) throws VisitException {
 	return v.visitStmtFunDefn(this, arg);
-    }
+    }*/
 
     public String getVar(){
     	return this.var;

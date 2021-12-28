@@ -63,7 +63,7 @@ public abstract class ASTNode<E extends ASTNode> {
      * call to its associated method in the visitor.
      */
     public abstract <S, T> T visit(Visitor<S, T> v, S arg)
-	throws VisitException ;
+	throws VisitException, NoSuchMethodException ; //added No such method exception
 
     /** Return a string representation of this node and its subtree.
      * The returned string should bear some resemblance to the user's
