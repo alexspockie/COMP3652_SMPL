@@ -20,7 +20,7 @@ public class ExpCompare extends ExpBinOp {
     	return this.c;
     }
 
-    public <S, T> T visit(Visitor<S,T> v, S arg) throws VisitException {
+    public <S, T> T visit(Visitor<S,T> v, S arg) throws VisitException, NoSuchMethodException {
 	return v.visitExpCompare(this, arg);
     }
 

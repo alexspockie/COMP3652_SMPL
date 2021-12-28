@@ -11,7 +11,7 @@ public class ExpVar extends Exp {
 	return var;
     }
 
-    public <S, T> T visit(Visitor<S, T> v, S arg) throws VisitException {
+    public <S, T> T visit(Visitor<S, T> v, S arg) throws VisitException, NoSuchMethodException {
 	return v.visitExpVar(this, arg);
     }
 
