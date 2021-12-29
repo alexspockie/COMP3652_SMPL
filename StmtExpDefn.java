@@ -6,14 +6,28 @@
 public class StmtExpDefn extends Statement{
     String var;
     Exp expression;
+    ExpProcedure proc;
 
     public StmtExpDefn(String id, Exp epression) {
 	super("assign exp", epression);
 	var = id;
     expression=epression;
+    proc=null;
     }
 
-   
+    public StmtExpDefn(String id, ExpProcedure epression) {
+        super("assign exp", epression);
+        var = id;
+        proc=epression;
+        }
+    
+    public ExpProcedure getProc(){
+        return proc;
+    }
+    public Boolean isProc(){
+        return proc==null;
+    }
+   //check if expression is an expprocedure?
 
     public String toString(){
     	return "";
