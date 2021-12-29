@@ -263,7 +263,7 @@ definition ::= VAR:v ASSIGN exptop:e {:
 
 
 read ::= READ LPAREN RPAREN {: RESULT = newExpRead("string"); :}|
-		READINT LPAREN RPAREN {:RESULT = newExpERead("int"); :};
+		READINT LPAREN RPAREN {:RESULT = newExpRead("int"); :};
 
 comment ::= LCOM {:RESULT = null; :}|
 			BCOMS BCOME {:RESULT = null; :};
