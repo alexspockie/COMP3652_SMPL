@@ -26,7 +26,7 @@ public class ExpFunCall extends Exp {
     	return this.argList;
     }
 
-    public <S, T> T visit(Visitor<S,T> v, S arg) throws VisitException {
+    public <S, T> T visit(Visitor<S,T> v, S arg) throws VisitException,NoSuchMethodException {
 	return v.visitExpFunCall(this, arg);
     }
 

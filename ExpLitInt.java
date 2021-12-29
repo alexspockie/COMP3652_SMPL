@@ -1,8 +1,8 @@
-public class ExpLit extends Exp {
+public class ExpLitInt extends Exp {
 
     int val;
 
-    public ExpLit(Integer v) {
+    public ExpLitInt(Integer v) {
 	super(v.toString());
 	val = v.intValue();
     }
@@ -11,7 +11,7 @@ public class ExpLit extends Exp {
 	return val;
     }
 
-    public <S, T> T visit(Visitor<S, T> v, S arg) throws VisitException {
+    public <S, T> T visit(Visitor<S, T> v, S arg) throws VisitException, NoSuchMethodException {
 	return v.visitExpLit(this, arg);
     }
 

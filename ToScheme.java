@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class ToScheme implements Visitor<Void, String> {
-
+    //this is our evaluator class
     String result;
 
     public ToScheme() {
@@ -70,7 +70,7 @@ public class ToScheme implements Visitor<Void, String> {
     }
 
     public String visitExpCompare(ExpCompare exp, Void arg)
-	throws VisitException {
+	throws VisitException{
 	String left = exp.getExpL().visit(this, arg);
 	String right = exp.getExpR().visit(this, arg);
 	return "("+exp.getName()+" " + left + " " + right + ")";
@@ -84,7 +84,7 @@ public class ToScheme implements Visitor<Void, String> {
 
     // expressions
     public String visitExpAdd(ExpAdd exp, Void arg)
-	throws VisitException {
+	throws VisitException, NoSuchMethodException {
 	String left = exp.getExpL().visit(this, arg);
 	String right = exp.getExpR().visit(this, arg);
 	return "(+ " + left + " " + right + ")";
@@ -97,33 +97,33 @@ public class ToScheme implements Visitor<Void, String> {
     }
 
     public String visitExpMul(ExpMul exp, Void arg)
-	throws VisitException {
+	throws VisitException , NoSuchMethodException{
 	String left = exp.getExpL().visit(this, arg);
 	String right = exp.getExpR().visit(this, arg);
 	return "(* " + left + " " + right + ")";
     }
 
     public String visitExpDiv(ExpDiv exp, Void arg)
-	throws VisitException {
+	throws VisitException , NoSuchMethodException{
 	String left = exp.getExpL().visit(this, arg);
 	String right = exp.getExpR().visit(this, arg);
 	return "(/ " + left + " " + right + ")";
     }
 
     public String visitExpMod(ExpMod exp, Void arg)
-	throws VisitException{
+	throws VisitException, NoSuchMethodException{
 	String left = exp.getExpL().visit(this, arg);
 	String right = exp.getExpR().visit(this, arg);
 	return "(mod " + left + " " + right + ")";
     }
 
-    public String visitExpLit(ExpLit exp, Void arg)
-	throws VisitException{
+    public String visitExpLit(ExpLitInt exp, Void arg)
+	throws VisitException, NoSuchMethodException{
 	return "" + exp.getVal();
     }
 
     public String visitExpVar(ExpVar exp, Void arg)
-	throws VisitException {
+	throws VisitException, NoSuchMethodException {
 	return exp.getVar();
     }
 
