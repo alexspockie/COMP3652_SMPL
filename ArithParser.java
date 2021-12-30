@@ -826,11 +826,11 @@ class CUP$ArithParser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 30: // list ::= LBRACKET argListE RBRACKET 
             {
-              Object RESULT =null;
+              ExpList RESULT =null;
 		int alstleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).left;
 		int alstright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).right;
 		ArrayList<Exp> alst = (ArrayList<Exp>)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).value;
-		 RESULT = alst; 
+		 RESULT = new ExpList(alst); 
               CUP$ArithParser$result = parser.getSymbolFactory().newSymbol("list",18, ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-2)), ((java_cup.runtime.Symbol)CUP$ArithParser$stack.peek()), RESULT);
             }
           return CUP$ArithParser$result;
@@ -838,11 +838,11 @@ class CUP$ArithParser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 31: // vector ::= LBRACKET COLON argListE COLON RBRACKET 
             {
-              Object RESULT =null;
+              ExpVector RESULT =null;
 		int alstleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-2)).left;
 		int alstright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-2)).right;
 		ArrayList<Exp> alst = (ArrayList<Exp>)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-2)).value;
-		 RESULT = null; 
+		 RESULT = new ExpVector(alst); 
               CUP$ArithParser$result = parser.getSymbolFactory().newSymbol("vector",19, ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-4)), ((java_cup.runtime.Symbol)CUP$ArithParser$stack.peek()), RESULT);
             }
           return CUP$ArithParser$result;
@@ -850,14 +850,14 @@ class CUP$ArithParser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 32: // vectorCall ::= vector LBRACKET exptop RBRACKET 
             {
-              Object RESULT =null;
+              ExpVecCall RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).right;
-		Object v = (Object)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).value;
+		ExpVector v = (ExpVector)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).value;
 		int eleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).right;
 		Exp e = (Exp)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).value;
-		 RESULT = null; 
+		 RESULT = new ExpVecCall(v,e); 
               CUP$ArithParser$result = parser.getSymbolFactory().newSymbol("vectorCall",20, ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)), ((java_cup.runtime.Symbol)CUP$ArithParser$stack.peek()), RESULT);
             }
           return CUP$ArithParser$result;
@@ -910,14 +910,14 @@ class CUP$ArithParser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 36: // call ::= CALL LPAREN VAR COMMA list RPAREN 
             {
-              Object RESULT =null;
+              ExpCall RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).right;
 		String v = (String)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).value;
-		int lleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).left;
-		int lright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).right;
-		Object l = (Object)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).value;
-		RESULT=new ExpCall(new ExpVar(v),l);
+		int lstleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).left;
+		int lstright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).right;
+		ExpList lst = (ExpList)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).value;
+		RESULT=new ExpCall(new ExpVar(v),lst);
               CUP$ArithParser$result = parser.getSymbolFactory().newSymbol("call",22, ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-5)), ((java_cup.runtime.Symbol)CUP$ArithParser$stack.peek()), RESULT);
             }
           return CUP$ArithParser$result;
@@ -925,14 +925,14 @@ class CUP$ArithParser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 37: // call ::= CALL LPAREN VAR COMMA VAR RPAREN 
             {
-              Object RESULT =null;
+              ExpCall RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).right;
 		String v = (String)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-3)).value;
-		int lleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).left;
-		int lright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).right;
-		String l = (String)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).value;
-		RESULT=new ExpCall(new ExpVar(v),new ExpVar(l));
+		int lstleft = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).left;
+		int lstright = ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).right;
+		String lst = (String)((java_cup.runtime.Symbol) CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-1)).value;
+		RESULT=new ExpCall(new ExpVar(v),new ExpVar(lst));
               CUP$ArithParser$result = parser.getSymbolFactory().newSymbol("call",22, ((java_cup.runtime.Symbol)CUP$ArithParser$stack.elementAt(CUP$ArithParser$top-5)), ((java_cup.runtime.Symbol)CUP$ArithParser$stack.peek()), RESULT);
             }
           return CUP$ArithParser$result;

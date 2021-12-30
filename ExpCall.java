@@ -1,16 +1,16 @@
 public class ExpCall extends Exp{
     ExpProcedure procedure;
     ExpVar id,l;
-    SMPLList args;
+    ExpList args;
 
-    public ExpCall(ExpProcedure proc, SMPLList lst){
+    public ExpCall(ExpProcedure proc, ExpList lst){
         super("call proc on", proc);
         procedure=proc;
         args=lst;
         id=null;
         l=null;
     }
-    public ExpCall(ExpVar v,SMPLList lst){
+    public ExpCall(ExpVar v,ExpList lst){
         super("call proc on", v);
         procedure=null;
         args=lst;
@@ -34,7 +34,7 @@ public class ExpCall extends Exp{
     public ExpVar getId(){
         return id;
     }
-    public SMPLList getLst(){
+    public ExpList getLst(){
         return args;
     }
     public ExpVar getL(){//return variable for list

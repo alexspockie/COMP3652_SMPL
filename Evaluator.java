@@ -177,16 +177,16 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	return val1.mod(val2);
     }
 
-    public SMPLDataType visitExpLit(ExpLitInt exp, Environment env)//Returns an SMPL Integer X
+    public SMPLInt visitExpLit(ExpLitInt exp, Environment env)//Returns an SMPL Integer X
 	throws VisitException, NoSuchMethodException {
-	SMPLDataType val1;
+	SMPLInt val1;
 	val1=new SMPLInt(exp.getVal());
 	return val1;
     }
 
-	public SMPLDataType visitExpDouble(ExpLitDouble exp, Environment env) //returns an SMPL Float X
+	public SMPLFloat visitExpDouble(ExpLitDouble exp, Environment env) //returns an SMPL Float X
 	throws VisitException, NoSuchMethodException {
-	SMPLDataType val1;
+	SMPLFloat val1;
 	val1=new SMPLFloat(exp.getVal());
 	return val1;
     }
@@ -219,7 +219,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	public SMPLDataType visitExpCall(ExpCall call, Environment arg) throws VisitException, NoSuchMethodException {
 		ArrayList<? extends SMPLDataType> val;
 		if (call.getL()==null){
-			val = call.getLst().getValue();//arguments
+			val = (ArrayList<? extends SMPLDataType>) call.getLst().visit(this,arg).getValue();//arguments
 		}
 		else{
 			//search environment for list
@@ -325,6 +325,42 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		}
 		
 		return new SMPLFloat(0d);
+	}
+
+	@Override
+	public SMPLList visitExpList(ExpList lst, Environment arg) throws VisitException, NoSuchMethodException {
+		ArrayList<Exp> args=lst.getList();
+		SMPLDataType res2;
+		ArrayList<SMPLDataType> flst=new ArrayList<>();
+		for(int i=0;i<args.size();i++){
+			res2=args.get(i).visit(this, arg);
+			flst.add(res2);
+		}
+		return new SMPLList(flst);
+	}
+	public SMPLVector visitExpVector(ExpVector vec, Environment arg) throws VisitException, NoSuchMethodException{
+		ArrayList<Exp> args=vec.getArgs();
+		SMPLDataType res2;
+		ArrayList<SMPLDataType> flst=new ArrayList<>();
+		for(int i=0;i<args.size();i++){
+			res2=args.get(i).visit(this, arg);
+			flst.add(res2);
+		}
+		return new SMPLVector(flst);
+	}
+	public SMPLDataType visitExpVecCall(ExpVecCall vc, Environment arg) throws VisitException, NoSuchMethodException{
+		ExpVar id=vc.getId();
+		SMPLVector vec;
+		if(!vc.hasVector()){
+			vec=(SMPLVector) id.visit(this, arg);
+		}
+		else{
+			vec=new SMPLVector(vc.getVec().visit(this, arg));
+		}
+		
+		ArrayList<? extends SMPLDataType> data=vec.getValue();
+		Integer num=(Integer) vc.getNum().visit(this, arg).getValue();
+		return data.get(num);
 	}
 }
 //might possibly need to add Booleans

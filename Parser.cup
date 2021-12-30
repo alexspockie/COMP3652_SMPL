@@ -92,11 +92,11 @@ non terminal ExpBind bind;
 non terminal ArrayList<ExpBind> bindList;
 non terminal ExpCClause pred;
 non terminal ArrayList<ExpCClause> predList;
-non terminal list;
-non terminal vector;
-non terminal vectorCall;
+non terminal ExpList list;
+non terminal ExpVector vector;
+non terminal ExpVecCall vectorCall;
 non terminal Exp proc;
-non terminal call;
+non terminal ExpCall call;
 non terminal Exp let;
 non terminal StmtExpDefn def;
 non terminal Exp case;
@@ -196,11 +196,12 @@ predList ::= predList:plst pred:p {: plst.add(p);
 				result.add(p);
 				RESULT = result; :};
 
-list ::= LBRACKET argListE:alst RBRACKET {: RESULT = alst; :}; // add other list form //fix rewsult
+list ::= LBRACKET argListE:alst RBRACKET {: RESULT = new ExpList(alst); :}; // add other list form //fix rewsult
+//make new class and change into other smpl list when evaluating?
 
-vector ::= LBRACKET COLON argListE:alst COLON RBRACKET {: RESULT = null; :};
+vector ::= LBRACKET COLON argListE:alst COLON RBRACKET {: RESULT = new ExpVector(alst); :};
 
-vectorCall ::= vector:v LBRACKET exptop:e RBRACKET	{: RESULT = null; :};			
+vectorCall ::= vector:v LBRACKET exptop:e RBRACKET	{: RESULT = new ExpVecCall(v,e); :};	//needs a variable too		
 
 /* New keyword functions */
 proc ::= PROC VAR:v stmtList:body {: RESULT = null; :} |
@@ -213,8 +214,8 @@ proc ::= PROC VAR:v stmtList:body {: RESULT = null; :} |
 //procc ::= PROC LPAREN paramList:plst RPAREN expc:e {: RESULT = null; :};
 
 //call ::= CALL LPAREN proc:p COMMA list:l RPAREN {: RESULT = new ExpCall(p,l); :} |
-call::=  CALL LPAREN VAR:v COMMA list:l RPAREN	{:RESULT=new ExpCall(new ExpVar(v),l);:}|
-		  CALL LPAREN VAR:v COMMA VAR:l RPAREN{:RESULT=new ExpCall(new ExpVar(v),new ExpVar(l));:}; //change to getting a list and not an arg
+call::=  CALL LPAREN VAR:v COMMA list:lst RPAREN	{:RESULT=new ExpCall(new ExpVar(v),lst);:}|
+		  CALL LPAREN VAR:v COMMA VAR:lst RPAREN{:RESULT=new ExpCall(new ExpVar(v),new ExpVar(lst));:}; //change to getting a list and not an arg
      
 
 let ::= LET LPAREN bindList:blst RPAREN stmtList:body {: RESULT = new ExpLet(blst,body); :};

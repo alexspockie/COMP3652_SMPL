@@ -71,7 +71,7 @@ public class ToScheme implements Visitor<Void, String> {
     }
 
     public String visitExpCompare(ExpCompare exp, Void arg)
-	throws VisitException{
+	throws VisitException, NoSuchMethodException{
 	String left = exp.getExpL().visit(this, arg);
 	String right = exp.getExpR().visit(this, arg);
 	return "("+exp.getName()+" " + left + " " + right + ")";
@@ -91,7 +91,7 @@ public class ToScheme implements Visitor<Void, String> {
 	return "(+ " + left + " " + right + ")";
     }
     public String visitExpSub(ExpSub exp, Void arg)
-	throws VisitException {
+	throws VisitException, NoSuchMethodException {
 	String left = exp.getExpL().visit(this, arg);
 	String right = exp.getExpR().visit(this, arg);
 	return "(- " + left + " " + right + ")";
@@ -202,6 +202,24 @@ public class ToScheme implements Visitor<Void, String> {
 
 	@Override
 	public String visitExpDouble(ExpLitDouble exp, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpList(ExpList lst, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpVector(ExpVector vec, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpVecCall(ExpVecCall vc, Void arg) throws VisitException, NoSuchMethodException {
 		// TODO Auto-generated method stub
 		return null;
 	}
