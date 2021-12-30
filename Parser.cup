@@ -261,17 +261,17 @@ logExpN ::= NOT logExp:e {: RESULT = new ExpComp(e,null,"NOT"); :}|
 				result.add(e);
 				RESULT = new ExpIfThen(result,l);:};*/
 
-ifTheno ::= IF logExpO:l THEN exptop:e {:				//changed logExp to logExpO
+ifTheno ::= IF logExp:l THEN exptop:e {:				//changed logExp to logExpO
 			ArrayList<Exp> result = new ArrayList<>(); 
 				result.add(e);
 				RESULT = new ExpIfThen(result,l);:}|
-			IF logExpO:l THEN expc:e ELSE expo:e2 {:
+			IF logExp:l THEN expc:e ELSE expo:e2 {:
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				result.add(e2);
 				RESULT = new ExpIfThen(result,l);:}; //open
 
-ifThenc ::= IF logExpO:l THEN expc:e ELSE expc:e2 {: 	//changed logExp to logExpO
+ifThenc ::= IF logExp:l THEN expc:e ELSE expc:e2 {: 	//changed logExp to logExpO
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				result.add(e2);
@@ -336,6 +336,7 @@ term ::= term:t MUL factor:f {:
 
 factor ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
           FLOAT:ilit {:RESULT = new ExpLitDouble(ilit);:}|
+          VAR:var {: RESULT = new ExpVar(var); :} |
 	   LPAREN exptop:e RPAREN {: RESULT = e; :}|
 	   funCall:fc {: RESULT = fc; :}|
 	   case:c {: RESULT = c; :}|

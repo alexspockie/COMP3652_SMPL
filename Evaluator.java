@@ -91,7 +91,8 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	public SMPLDataType visitExpProcedure(ExpProcedure proc, Environment env)//X
 	throws VisitException, NoSuchMethodException{
 		//return new SMPLFloat(0d); //fix
-		return new SMPLInt(0); //FIX FOR ADDITIONAL forms of proc
+		Closure close = new Closure(proc,env);
+		return new SMPLProcedure(close); //FIX FOR ADDITIONAL forms of proc
 	}
 
     public SMPLDataType visitExpFunCall(ExpFunCall fc, Environment env)
@@ -154,7 +155,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
     public SMPLDataType visitExpIfThen(ExpIfThen exp, Environment env)//X
 
 	throws VisitException, NoSuchMethodException{ //X
-	if (exp.getLog().visit(this,env).relationalCmp(Cmp.EQ, new SMPLInt(1)).getValue()) //get ExpCompare, visits it
+	if (exp.getLog().visit(this,env).relationalCmp(Cmp.EQ, new SMPLFloat(1D)).getValue()) //get ExpCompare, visits it
 		return exp.getArgs().get(0).visit(this, env);
 	if (exp.getArgs().size()>1)
 		return exp.getArgs().get(1).visit(this, env);
