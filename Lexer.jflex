@@ -154,7 +154,7 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 			return new Symbol(sym.FLOAT, new Double(yytext()));
 			}
 
-<YYINITIAL> (#c[A-ZA-Z]) | (#c\\[n\t]) {return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
+<YYINITIAL> (#c[A-Za-z]) | (#c\\[n\\t]) {return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
 
 <YYINITIAL> #u[A-F0-9]{4} {return new Symbol(sym.CHAR, Character.toChars(Integer.parseInt(yytext().substring(2))));}
 

@@ -44,6 +44,11 @@ abstract public class SMPLNumber<T> extends SMPLDataType<T> {
 
     }
 
+    @Override
+    public SMPLBoolean relationalCmp(Cmp cmp, SMPLDataType o) throws NoSuchMethodException {
+        return cmp.apply(this, o);
+    }
+
     public static int toJavaInt(SMPLDataType n) throws NoSuchMethodException {
         if (n.getClass() == SMPLInt.class) {
             return ((SMPLInt) n).getValue();
