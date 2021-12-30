@@ -310,6 +310,7 @@ term ::= term:t MUL factor:f {:
 
 factor ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
           FLOAT:ilit {:RESULT = new ExpLitDouble(ilit);:}|
+		   VAR:v {:RESULT = new ExpVar(v);:}| 
 	   LPAREN exptop:e RPAREN {: RESULT = e; :}|
 	   funCall:fc {: RESULT = fc; :}|
 	   case:c {: RESULT = c; :}|
