@@ -127,7 +127,32 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 
     }
 
+    public SMPLDataType visitExpComp(ExpComp exp, Environment env)
+	throws VisitException, NoSuchMethodException{ //X
+	SMPLDataType val1, val2;
+	SMPLFloat t = new SMPLFloat(1D);
+	SMPLFloat f = new SMPLFloat(0D);
+	val1 = exp.getExpL().visit(this, env);
+	if (exp.getC() == "NOT")
+	{
+		if (val1 == t)
+			return new SMPLFloat(0D);
+		return new SMPLFloat(1D);
+	}
+	val2 = exp.getExpR().visit(this, env);
+	if (exp.getC() == "AND")
+	{
+		if ((val1 == val2) && (val1 == t))
+			return new SMPLFloat(1D); //
+		return new SMPLFloat(0D);
+	}
+	if ((val1 == t) || (val2 == t))
+		return new SMPLFloat(1D); //
+	return new SMPLFloat(0D);
+    }
+
     public SMPLDataType visitExpIfThen(ExpIfThen exp, Environment env)//X
+
 	throws VisitException, NoSuchMethodException{ //X
 	if (exp.getLog().visit(this,env).relationalCmp(Cmp.EQ, new SMPLInt(1)).getValue()) //get ExpCompare, visits it
 		return exp.getArgs().get(0).visit(this, env);

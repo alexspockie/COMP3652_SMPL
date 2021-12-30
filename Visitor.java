@@ -36,6 +36,7 @@ public interface Visitor<S, T> {
     public T visitExpVecCall(ExpVecCall vc, S arg)throws VisitException,NoSuchMethodException;//evaluates expression and returns the objetc at the space
 
     // arithmetic and char expressions
+    public T visitExpComp(ExpComp exp, S arg) throws VisitException, NoSuchMethodException ; // and, or, not
     public T visitExpCompare(ExpCompare exp, S arg) throws VisitException, NoSuchMethodException ; //comparisons
     public T visitExpIfThen(ExpIfThen exp, S arg) throws VisitException, NoSuchMethodException ;//if
     public T visitExpAdd(ExpAdd exp, S arg) throws VisitException,NoSuchMethodException ;//add

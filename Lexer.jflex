@@ -79,6 +79,7 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 
 <YYINITIAL>	{nl}	{//skip newline, but reset char counter
 			 yychar = 0;
+			 return new Symbol(sym.NL);
 			}
 <YYINITIAL>	{ws}	{
 			 // skip whitespace

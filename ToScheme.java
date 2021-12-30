@@ -76,6 +76,11 @@ public class ToScheme implements Visitor<Void, String> {
 	String right = exp.getExpR().visit(this, arg);
 	return "("+exp.getName()+" " + left + " " + right + ")";
     }
+    public String visitExpComp(ExpComp exp, Void arg)
+	throws VisitException, NoSuchMethodException{
+		//to be implemented
+	return "";
+    }
 
     public String visitExpIfThen(ExpIfThen exp, Void env)
 	throws VisitException {

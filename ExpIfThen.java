@@ -2,9 +2,9 @@ import java.util.ArrayList;
 public class ExpIfThen extends Exp {
 
 	ArrayList<Exp> args;
-    ExpCompare c;
+    Exp c;//changed from ExpCompare
 
-    public ExpIfThen(ArrayList<Exp> args, ExpCompare c) {
+    public ExpIfThen(ArrayList<Exp> args, Exp c) {
 	super(c.toString(), args);
 	this.c = c;
     this.args = args;
@@ -14,7 +14,7 @@ public class ExpIfThen extends Exp {
         return "call";
     }
 
-    public ExpCompare getLog(){
+    public Exp getLog(){//changed from ExpCompare
         return this.c;
     }
 

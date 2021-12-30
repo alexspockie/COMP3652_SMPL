@@ -1,7 +1,7 @@
 public class ExpCClause extends Exp {
-    ExpCompare logExp;
+    Exp logExp;//changed from ExpCompare
     Exp consequent;
-    public ExpCClause(ExpCompare pred,Exp cons){
+    public ExpCClause(Exp pred,Exp cons){//changed from ExpCompare
         super("clause of a case",cons);
         this.logExp=pred;
         this.consequent=cons;
@@ -13,7 +13,7 @@ public class ExpCClause extends Exp {
         this.consequent=cons;
         this.logExp=null; //so if the predicate is null then it is an esle clause
     }
-    public ExpCompare getLog(){
+    public Exp getLog(){//changed from ExpCompare
         return logExp;
     }
     public Exp getCons(){
