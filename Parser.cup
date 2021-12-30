@@ -261,17 +261,17 @@ logExpN ::= NOT logExp:e {: RESULT = new ExpComp(e,null,"NOT"); :}|
 				result.add(e);
 				RESULT = new ExpIfThen(result,l);:};*/
 
-ifTheno ::= IF logExp:l THEN exptop:e {:				//changed logExp to logExpO
+ifTheno ::= IF logExpO:l THEN exptop:e {:				//changed logExp to logExpO
 			ArrayList<Exp> result = new ArrayList<>(); 
 				result.add(e);
 				RESULT = new ExpIfThen(result,l);:}|
-			IF logExp:l THEN expc:e ELSE expo:e2 {:
+			IF logExpO:l THEN expc:e ELSE expo:e2 {:
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				result.add(e2);
 				RESULT = new ExpIfThen(result,l);:}; //open
 
-ifThenc ::= IF logExp:l THEN expc:e ELSE expc:e2 {: 	//changed logExp to logExpO
+ifThenc ::= IF logExpO:l THEN expc:e ELSE expc:e2 {: 	//changed logExp to logExpO
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				result.add(e2);
