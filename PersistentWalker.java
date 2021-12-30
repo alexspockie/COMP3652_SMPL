@@ -25,8 +25,9 @@ public class PersistentWalker<S, T> {
 
     /** Traverse the given expression (AST) using the visitor with its 
 	associated state. 
+     * @throws NoSuchMethodException
     */
-    public T walk(ASTNode<? extends ASTNode> expr) throws VisitException {
+    public T walk(ASTNode<? extends ASTNode> expr) throws VisitException, NoSuchMethodException {
 	return expr.visit(visitor, state);
     }
 }

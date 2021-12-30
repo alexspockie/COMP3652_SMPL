@@ -18,19 +18,20 @@ public class ToScheme implements Visitor<Void, String> {
 
     // program
     public String visitArithProgram(ArithProgram p, Void arg)
-	throws VisitException {
+	throws VisitException,NoSuchMethodException {
 	result = (String) p.getSeq().visit(this, arg);
 	return result;
     }
 
     // statements
     public String visitStatement(Statement stmt, Void arg)
-	throws VisitException {
+	throws VisitException,NoSuchMethodException {
 	return stmt.getExp().visit(this, arg);
     }
 
     public String visitStmtSequence(StmtSequence exp, Void arg)
-	throws VisitException {
+	throws VisitException,NoSuchMethodException {
+	
 	ArrayList stmts = exp.getSeq();
 	if (stmts.size() == 1)
 	    return ((Statement) stmts.get(0)).visit(this,
@@ -50,7 +51,7 @@ public class ToScheme implements Visitor<Void, String> {
     }
 
     public String visitStmtDefinition(StmtDefinition sd, Void arg)
-	throws VisitException {
+	throws VisitException, NoSuchMethodException {
 	String valExp = (String) sd.getExp().visit(this,
 						   arg);
 	return "(define " + sd.getVar() + " " +
@@ -126,5 +127,83 @@ public class ToScheme implements Visitor<Void, String> {
 	throws VisitException, NoSuchMethodException {
 	return exp.getVar();
     }
+
+	@Override
+	public String visitStmtExpDefn(StmtExpDefn proc, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpBind(ExpBind bind, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpProcedure(ExpProcedure proc, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpCClause(ExpCClause clause, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpCall(ExpCall call, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpLet(ExpLet let, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpCase(ExpCase ecase, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpSequence(ExpSequence seq, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitMultiExp(MultiValExp exp, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitStmtMulDef(StmtMulDef muldef, Void exp) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitRead(ExpRead read, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitPrint(ExpPrint print, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpDouble(ExpLitDouble exp, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

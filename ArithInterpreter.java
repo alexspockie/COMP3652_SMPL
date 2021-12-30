@@ -5,16 +5,16 @@ import lib3652.util.ResultType;
 import lib3652.util.Result;
 import lib3652.util.TokenException;
 
-public class ArithInterpreter extends AssessmentVisitor<Environment<Double>,
-							 Double> {
+public class ArithInterpreter extends AssessmentVisitor<Environment,
+							 SMPLDataType> {
     /**
      * Create a new Arithmetic Interpreter with a default global environment.
      */ 
     public ArithInterpreter() {
-	super(new Evaluator(0D));
+	super(new Evaluator(new SMPLFloat(0D)));
     }
 
-    public Result toResult(Double r) {
+    public Result toResult(SMPLDataType r) {
 	return new Result(ResultType.V_REAL, r);
     }
 }

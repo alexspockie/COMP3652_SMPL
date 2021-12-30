@@ -58,18 +58,24 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	env.put(sd.getVar(), result);
 	return result;
     }
+
 	@Override
-	public SMPLDataType visitStmtExpDefn(StmtExpDefn proc, Environment arg)
+	public SMPLDataType visitStmtExpDefn(StmtExpDefn proc, Environment arg) //X
 			throws VisitException, NoSuchMethodException {
-		if (proc.isProc()){
+		if (proc.isProc()){ //potentially change result type to T
 				//create a closure with proc
 		Closure close=new Closure(proc.getProc(),arg); 
 		arg.put(proc.getVar(),new SMPLProcedure(close));
-		//add closure to environment return nothing		
-
+		//add closure to environment return nothing
 		}
-		//do this for other expressions
-		//do this for procedures
+		else{
+			//get expression evaluate it 
+			//return result as variable
+			Exp exp=proc.getExpression();
+			SMPLDataType result=exp.visit(this,arg);
+			arg.put(proc.getVar(),result);
+		}
+	
 	
 		return new SMPLFloat(0d);
 	}
@@ -82,17 +88,18 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
     	env.put(fd.getVar(),new SMPLProcedure(close));
 		return new SMPLFloat(0D);// add return type 
     }*/
-	public SMPLDataType visitExpProcedure(ExpProcedure proc, Environment env)
+	public SMPLDataType visitExpProcedure(ExpProcedure proc, Environment env)//X
 	throws VisitException, NoSuchMethodException{
 		//return new SMPLFloat(0d); //fix
-		return new SMPLInt(0); //need to return an smpl data type
+		return new SMPLInt(0); //FIX FOR ADDITIONAL forms of proc
 	}
 
     public SMPLDataType visitExpFunCall(ExpFunCall fc, Environment env)
 	throws VisitException, NoSuchMethodException {//uses SMPLProcedure
 	// to be implemented
 		Closure close = SMPLProcedure.class.cast(env.get(fc.getVar())).getValue();
-    	StmtFunDefn fun = close.getFunction(); //no longer have stmt fun def so we need to change
+    	ExpProcedure fun = close.getProc(); //no longer have stmt fun def so we need to change
+
     	ArrayList<String> params = fun.getParams();
     	ArrayList<SMPLDataType> vals = new ArrayList<SMPLDataType>();
     	ArrayList<Exp> args = fc.getArgList();
@@ -106,7 +113,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
     		return fun.getStatements().visit(this,env2);
     }
 
-    public SMPLDataType visitExpCompare(ExpCompare exp, Environment env)
+    public SMPLDataType visitExpCompare(ExpCompare exp, Environment env)//X
 	throws VisitException, NoSuchMethodException{ //X
 	SMPLDataType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
@@ -120,7 +127,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 
     }
 
-    public SMPLDataType visitExpIfThen(ExpIfThen exp, Environment env)
+    public SMPLDataType visitExpIfThen(ExpIfThen exp, Environment env)//X
 	throws VisitException, NoSuchMethodException{ //X
 	if (exp.getLog().visit(this,env).relationalCmp(Cmp.EQ, new SMPLInt(1)).getValue()) //get ExpCompare, visits it
 		return exp.getArgs().get(0).visit(this, env);
@@ -192,66 +199,132 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 
 	
 	@Override
-	public SMPLDataType visitExpBind(ExpBind bind, Environment arg) throws VisitException, NoSuchMethodException {
-		// TODO Auto-generated method stub
-		return null;
+	public SMPLDataType visitExpBind(ExpBind bind, Environment arg) throws VisitException, NoSuchMethodException {//X
+		Exp ep=bind.getExp();
+		SMPLDataType result=ep.visit(this,arg);
+		arg.put(bind.getId(),result);
+		return 	new SMPLFloat(0d);
 	}
 
 	@Override
-	public SMPLDataType visitExpCClause(ExpCClause clause, Environment arg)
+	public SMPLDataType visitExpCClause(ExpCClause clause, Environment arg) //X
 			throws VisitException, NoSuchMethodException {
-		// TODO Auto-generated method stub
-		return null;
+				if (clause.getLog()!=null){
+				return clause.getLog().visit(this,arg);
+				}
+			return new SMPLFloat(0d);
 	}
 
 	@Override
 	public SMPLDataType visitExpCall(ExpCall call, Environment arg) throws VisitException, NoSuchMethodException {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<? extends SMPLDataType> val;
+		if (call.getL()==null){
+			val = call.getLst().getValue();//arguments
+		}
+		else{
+			//search environment for list
+			val =(ArrayList<? extends SMPLDataType>) call.getL().visit(this, arg).getValue();//arguments
+		}
+		Closure close=  SMPLProcedure.class.cast(call.getId().visit(this,arg)).getValue();//get closure
+		ExpProcedure fun=close.getProc();//get procedure
+		ArrayList<String> params = fun.getParams();
+	
+		Environment env2 = new Environment(close.getClosingEnv(),params,val);
+    	if (fun.getStatements() == null)
+    		return fun.getExpression().visit(this,env2);
+    	else 
+    		return fun.getStatements().visit(this,env2); 
+	}
+
+	
+	
+	
+	@Override
+	public SMPLDataType visitExpLet(ExpLet let, Environment arg) throws VisitException, NoSuchMethodException {//X
+		
+		//create a new environment
+		Environment letenv=new Environment();
+		letenv.setParent(arg);
+		//evaluate bindings with new environment
+		ArrayList<ExpBind> bindings=let.getBinds();
+		for(int i=0;i<bindings.size();i++){
+			bindings.get(i).visit(this, letenv);
+		}
+	
+
+		return let.getBody().visit(this,letenv); //might have to change to get an expression
+
 	}
 
 	@Override
-	public SMPLDataType visitExpLet(ExpLet let, Environment arg) throws VisitException, NoSuchMethodException {
+	public SMPLDataType visitExpCase(ExpCase ecase, Environment arg) throws VisitException, NoSuchMethodException { //X
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public SMPLDataType visitExpCase(ExpCase ecase, Environment arg) throws VisitException, NoSuchMethodException {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<ExpCClause> clauses=ecase.getPred();
+		for(int i=0;i<clauses.size();i++){
+			if (clauses.get(i).isElse()==true || clauses.get(i).visit(this, arg).relationalCmp(Cmp.EQ, new SMPLInt(1)).getValue()){
+				return clauses.get(i).visit(this,arg);
+			}
+		}
+		return null;//should never reach here
 	}
 
 	@Override
 	public SMPLDataType visitExpSequence(ExpSequence seq, Environment arg)
-			throws VisitException, NoSuchMethodException {
-		// TODO Auto-generated method stub
+			throws VisitException, NoSuchMethodException { //x
+		// evluate left to right return result of last
+		ArrayList<Exp> lstexps=seq.getExps();
+		for(int i=0;i<lstexps.size();i++){
+			SMPLDataType result= lstexps.get(i).visit(this, arg);
+			if(i==(lstexps.size()-1)){
+				return result;
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public SMPLDataType visitMultiExp(MultiValExp exp, Environment arg) throws VisitException, NoSuchMethodException {
-		// TODO Auto-generated method stub
-		return null;
+			ArrayList<Exp> exps=exp.getExps();
+			ArrayList<SMPLDataType> result=new ArrayList<>();
+			for(int i=0;i<exps.size();i++){
+				result.add(exps.get(i).visit(this,arg));
+			}
+			return new SMPLList(result); //prints a tuple of values?
+		//return null;//return a list
 	}
 
 	@Override
 	public SMPLDataType visitStmtMulDef(StmtMulDef muldef, Environment exp)
 			throws VisitException, NoSuchMethodException {
-		// TODO Auto-generated method stub
+		// extension
 		return null;
 	}
 
 	@Override
 	public SMPLDataType visitRead(ExpRead read, Environment arg) throws VisitException, NoSuchMethodException {
 		// TODO Auto-generated method stub
-		return null;
+		Scanner sc = new Scanner(System.in);
+		if(read.getReadType()=="string"){
+			SMPLString result=new SMPLString(sc.nextLine());
+		}
+		else{
+			SMPLInt result=new SMPLInt(sc.nextInt());
+		}
+		return result;
 	}
 
 	@Override
 	public SMPLDataType visitPrint(ExpPrint print, Environment arg) throws VisitException, NoSuchMethodException {
 		// TODO Auto-generated method stub
-		return null;
+		Exp expr=print.getExp();
+		SMPLDataType result=expr.visit(this,arg);
+		if(print.getType()=="ln"){
+		System.out.println(result.toString());}
+		else{
+			System.out.print(result.toString());
+		}
+		
+		return new SMPLFloat(0d);
 	}
 }
 //might possibly need to add Booleans
