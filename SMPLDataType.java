@@ -91,33 +91,12 @@ abstract public class SMPLDataType<T> {
 
     // bitwise
 
-    /**
-     * Invoked for the & operator
-     * @param o
-     * @return The result of this & o
-     * @throws NoSuchMethodException If this method is not allowed for this datatype
-     */
-    public SMPLInt bitwiseAnd(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator & not allowed between types "+ this.getClass() + " and " + o.getClass());
-    }
-
-    /**
-     * Invoked for the | operator
-     * @param o
-     * @return The result of this | o
-     * @throws NoSuchMethodException If this method is not allowed for this datatype
-     */
-    public SMPLInt bitwiseOr(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator | not allowed between types "+ this.getClass() + " and " + o.getClass());
-    }
-
-    /**
-     * Invoked for the ~ operator
-     * @return The product of this raised to the power of o
-     * @throws NoSuchMethodException If this method is not allowed for this datatype
-     */
-    public SMPLInt bitwiseNot() throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator ~ not allowed on type "+ this.getClass());
+    public SMPLInt bitwiseOp(BitwiseOp op, SMPLDataType o) throws NoSuchMethodException {
+        if (o != null) {
+            return op.apply(this, o);
+        } else {
+            return op.apply(this);
+        }
     }
 
     // relational
