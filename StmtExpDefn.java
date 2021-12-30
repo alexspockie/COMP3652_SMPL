@@ -25,7 +25,7 @@ public class StmtExpDefn extends Statement{
         return proc;
     }
     public Boolean isProc(){
-        return proc==null;
+        return proc!=null;
     }
    //check if expression is an expprocedure?
 

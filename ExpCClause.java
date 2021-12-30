@@ -13,6 +13,15 @@ public class ExpCClause extends Exp {
         this.consequent=cons;
         this.logExp=null; //so if the predicate is null then it is an esle clause
     }
+    public ExpCompare getLog(){
+        return logExp;
+    }
+    public Exp getCons(){
+        return consequent;
+    }
+    public Boolean isElse(){
+        return logExp==null;
+    }
     @Override
     public <S, T> T visit(Visitor<S, T> v, S arg) throws VisitException, NoSuchMethodException {
         return v.visitExpCClause(this, arg);

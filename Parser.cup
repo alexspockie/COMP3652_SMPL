@@ -75,7 +75,7 @@ non terminal ArithProgram program;
 non terminal StmtSequence stmtList;
 non terminal Statement stmt;
 non terminal StmtDefinition definition;
-non terminal Statement mulDef;
+//non terminal Statement mulDef;
 
 /* ** Fix these declarations ** */
 non terminal StmtFunDefn funDefn;
@@ -88,17 +88,17 @@ non terminal ArrayList<String> paramList;
 non terminal ArrayList<String> paramListE;
 non terminal ArrayList<Exp> argList;
 non terminal ArrayList<Exp> argListE;
-non terminal String bind;
-non terminal ArrayList<String> bindList;
-non terminal String pred;
-non terminal ArrayList<String> predList;
-non terminal list;
-non terminal vector;
-non terminal vectorCall;
+non terminal ExpBind bind;
+non terminal ArrayList<ExpBind> bindList;
+non terminal ExpCClause pred;
+non terminal ArrayList<ExpCClause> predList;
+non terminal ExpList list;
+non terminal ExpVector vector;
+non terminal ExpVecCall vectorCall;
 non terminal Exp proc;
-non terminal call;
+non terminal ExpCall call;
 non terminal Exp let;
-non terminal StmtDefinition def;
+non terminal StmtExpDefn def;
 non terminal Exp case;
 non terminal Exp expSeq;
 non terminal Exp mulExp;
@@ -171,7 +171,7 @@ paramList ::= paramList:plst COMMA VAR:v {:
 			:} | {: ArrayList<String> result = new ArrayList<>();
 				RESULT = result; :};  /* complete this */
 
-paramListE ::= paramList:pl {:RESULT=pl:} | empty;
+paramListE ::= paramList:pl {:RESULT=pl;:} | empty;
 
 //used in let definition
 bind ::= VAR:v EQUAL exptop:e {: RESULT = new ExpBind(v,e); :};
@@ -180,7 +180,7 @@ bindList ::= bindList:blst COMMA bind:b {: blst.add(b);
 			RESULT = blst; :} |
 		bind:b {:
 				ArrayList<ExpBind> result = new ArrayList<>();
-				result.add(b); //changed from arraylisrt<string> to arraylist<expbind>
+				result.add(b); //changed from arraylist <string> to arraylist<expbind>
 				RESULT = result;
 			:} | {: ArrayList<ExpBind> result = new ArrayList<>();
 				RESULT = result; :};
@@ -196,11 +196,12 @@ predList ::= predList:plst pred:p {: plst.add(p);
 				result.add(p);
 				RESULT = result; :};
 
-list ::= LBRACKET argListE:alst RBRACKET {: RESULT = null; :}; // add other list form
+list ::= LBRACKET argListE:alst RBRACKET {: RESULT = new ExpList(alst); :}; // add other list form //fix rewsult
+//make new class and change into other smpl list when evaluating?
 
-vector ::= LBRACKET COLON argListE:alst COLON RBRACKET {: RESULT = null; :};
+vector ::= LBRACKET COLON argListE:alst COLON RBRACKET {: RESULT = new ExpVector(alst); :};
 
-vectorCall ::= vector:v LBRACKET exptop:e RBRACKET	{: RESULT = null; :};			
+vectorCall ::= vector:v LBRACKET exptop:e RBRACKET	{: RESULT = new ExpVecCall(v,e); :};	//needs a variable too		
 
 /* New keyword functions */
 proc ::= PROC VAR:v stmtList:body {: RESULT = null; :} |
@@ -212,7 +213,10 @@ proc ::= PROC VAR:v stmtList:body {: RESULT = null; :} |
 
 //procc ::= PROC LPAREN paramList:plst RPAREN expc:e {: RESULT = null; :};
 
-call ::= CALL LPAREN proc:p COMMA list:l RPAREN {: RESULT = new ExpCall(p,l); :}; //change to getting a list and not an arg
+//call ::= CALL LPAREN proc:p COMMA list:l RPAREN {: RESULT = new ExpCall(p,l); :} |
+call::=  CALL LPAREN VAR:v COMMA list:lst RPAREN	{:RESULT=new ExpCall(new ExpVar(v),lst);:}|
+		  CALL LPAREN VAR:v COMMA VAR:lst RPAREN{:RESULT=new ExpCall(new ExpVar(v),new ExpVar(lst));:}; //change to getting a list and not an arg
+     
 
 let ::= LET LPAREN bindList:blst RPAREN stmtList:body {: RESULT = new ExpLet(blst,body); :};
 
@@ -262,8 +266,8 @@ definition ::= VAR:v ASSIGN exptop:e {:
 //mulDef ::= paramList:plst ASSIGN argList:alst {: RESULT = null; :};
 
 
-read ::= READ LPAREN RPAREN {: RESULT = newExpRead("string"); :}|
-		READINT LPAREN RPAREN {:RESULT = newExpRead("int"); :};
+read ::= READ LPAREN RPAREN {: RESULT = new ExpRead("string"); :}|
+		READINT LPAREN RPAREN {:RESULT = new ExpRead("int"); :};
 
 comment ::= LCOM {:RESULT = null; :}|
 			BCOMS BCOME {:RESULT = null; :};

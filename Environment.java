@@ -22,6 +22,9 @@ public class Environment {
         parent = null;
         dictionary = new HashMap<>();
     }
+    public void setParent(Environment parent){
+        this.parent=parent;
+    }
 
     /**
      * Creates a new <code>Environment</code> instance that is

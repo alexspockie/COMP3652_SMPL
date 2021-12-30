@@ -16,6 +16,8 @@ public class SMPLList extends SMPLDataType<ArrayList<? extends SMPLDataType>> {
     public SMPLList(SMPLDataType ... data) {
         super(new ArrayList<>(Arrays.asList(data)));
     }
+
+    
 }
     
 

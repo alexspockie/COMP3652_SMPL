@@ -54,5 +54,11 @@ public abstract class AssessmentVisitor<S, T> extends PersistentWalker<S, T>
 	    }
 	    return new Result(ResultType.ERROR_RUNTIME, e.getMessage());
 	}
+	catch (NoSuchMethodException e){
+		if (isVerbose) {
+			System.out.println(e.getMessage());
+			}
+			return new Result(ResultType.ERROR_RUNTIME, e.getMessage());
+	}
     }
 }
