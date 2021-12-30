@@ -62,7 +62,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	@Override
 	public SMPLDataType visitStmtExpDefn(StmtExpDefn proc, Environment arg) //X
 			throws VisitException, NoSuchMethodException {
-		if (proc.isProc()){ //potentially change result type to T
+		if (proc.isProc()){ //checks if it has an exp procedure
 				//create a closure with proc
 		Closure close=new Closure(proc.getProc(),arg); 
 		arg.put(proc.getVar(),new SMPLProcedure(close));
@@ -91,7 +91,10 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	public SMPLDataType visitExpProcedure(ExpProcedure proc, Environment env)//X
 	throws VisitException, NoSuchMethodException{
 		//return new SMPLFloat(0d); //fix
-		return new SMPLInt(0); //FIX FOR ADDITIONAL forms of proc
+		
+		Closure close = new Closure(proc,env);
+		return new SMPLProcedure(close);
+
 	}
 
     public SMPLDataType visitExpFunCall(ExpFunCall fc, Environment env)
