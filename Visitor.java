@@ -32,6 +32,7 @@ public interface Visitor<S, T> {
     public T visitRead(ExpRead read,S arg) throws VisitException, NoSuchMethodException;//readtype determines the kind of input read from keyboard
     public T visitPrint(ExpPrint print, S arg) throws VisitException,NoSuchMethodException;// evaluates expression then prints result to the screen
     public T visitExpList(ExpList lst,S arg) throws VisitException,NoSuchMethodException; //evaluates expressions and returns a SMPLList object
+    public T visitExpSize(ExpSize exp, S arg) throws VisitException, NoSuchMethodException ; //size for vector declaration
     public T visitExpVector(ExpVector vec,S arg)throws VisitException,NoSuchMethodException;//evaluates expressions and returns a vector object
     public T visitExpVecCall(ExpVecCall vc, S arg)throws VisitException,NoSuchMethodException;//evaluates expression and returns the objetc at the space
 

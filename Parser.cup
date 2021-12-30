@@ -208,12 +208,12 @@ list ::= LBRACKET argListE:alst RBRACKET {: RESULT = new ExpList(alst); :}; // a
 vector ::= LBRACKET COLON argListE:alst COLON RBRACKET {: RESULT = new ExpVector(alst); :}|
 			LBRACKET sizeList:slst RBRACKET{: RESULT = null; :};
 
-size ::= exptop:e1 COLON extop:e2 {: RESULT = new ExpSize(e1,e2); :};
+size ::= exptop:e1 COLON exptop:e2 {: RESULT = new ExpSize(e1,e2); :};
 
 sizeList ::= sizeList:slst COMMA size:s {: slst.add(s);
 			RESULT = slst; :} |
 			size:s {:
-				ArrayList<ExpCClause> result = new ArrayList<>();
+				ArrayList<Exp> result = new ArrayList<>();
 				result.add(s);
 				RESULT = result; :};
 

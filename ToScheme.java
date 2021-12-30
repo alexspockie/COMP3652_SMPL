@@ -82,6 +82,12 @@ public class ToScheme implements Visitor<Void, String> {
 	return "";
     }
 
+    public String visitExpSize(ExpSize exp, Void arg)
+	throws VisitException, NoSuchMethodException{
+		//to be implemented
+	return "";
+    }
+
     public String visitExpIfThen(ExpIfThen exp, Void env)
 	throws VisitException {
 	// to be implemented

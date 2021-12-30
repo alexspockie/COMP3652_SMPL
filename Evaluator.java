@@ -387,5 +387,8 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		Integer num=(Integer) vc.getNum().visit(this, arg).getValue();
 		return data.get(num);
 	}
+	public SMPLDataType visitExpSize(ExpSize exp, Environment arg) throws VisitException, NoSuchMethodException{
+		return new SMPLFloat(0d); // to be implemented
+	}
 }
 //might possibly need to add Booleans
