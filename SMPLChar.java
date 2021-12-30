@@ -79,22 +79,4 @@ public class SMPLChar extends SMPLIntegral<Character>{
         }
     }
 
-    @Override
-    public SMPLInt bitwiseAnd(SMPLDataType o) throws NoSuchMethodException {
-        Integer val = SMPLIntegral.toJavaInt(o);
-
-        return new SMPLInt(data & val);
-    }
-
-    @Override
-    public SMPLInt bitwiseOr(SMPLDataType o) throws NoSuchMethodException {
-        Integer val = SMPLIntegral.toJavaInt(o);
-
-        return new SMPLInt(data & val);
-    }
-
-    @Override
-    public SMPLInt bitwiseNot() throws NoSuchMethodException {
-        return new SMPLInt(~data);
-    }
 }
