@@ -20,14 +20,18 @@ public enum Cmp {
 	},
 
 	EQ("=") {
-		public <T extends SMPLDataType> SMPLBoolean apply(T arg1, T arg2) {
-			return new SMPLBoolean(arg1 == arg2);
+		public <T extends SMPLDataType> SMPLBoolean apply(T arg1, T arg2)  throws NoSuchMethodException {
+			double arg1d = SMPLNumber.toJavaDouble(arg1);
+			double arg2d = SMPLNumber.toJavaDouble(arg2);
+			return new SMPLBoolean(arg1d == arg2d);
 		}
 	},
 
 	NE("!=") {
-		public <T extends SMPLDataType> SMPLBoolean apply(T arg1, T arg2) {
-			return new SMPLBoolean(arg1 != arg2);
+		public <T extends SMPLDataType> SMPLBoolean apply(T arg1, T arg2)  throws NoSuchMethodException {
+			double arg1d = SMPLNumber.toJavaDouble(arg1);
+			double arg2d = SMPLNumber.toJavaDouble(arg2);
+			return new SMPLBoolean(arg1d != arg2d);
 		}
 	},
 
