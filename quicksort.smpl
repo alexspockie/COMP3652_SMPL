@@ -1,54 +1,90 @@
-def incUntil proc(s, len, arr,piv)
-    if s < len and arr[s] <= piv then 
-        incUntil(s+1) 
-    else
-        s;
+def quicksort proc(vec) {
 
-def decUntil proc(end, arr, piv)
-    if arr[end] > piv then
-        decUntil(end - 1)
-    else
-        end;
-            
-def partition proc(s,e,v2)
-    pivot_index := s;
-    pivot := v2[pivot_index];
+    def incUntil proc(s, len, arr,piv) {
+        if s < len then
+            if arr[s] <= piv then 
+                incUntil(s + 1, len, arr, piv) 
+            else
+                s
+        else
+            s;
+    };
 
-    // This loop runs till start pointer crosses 
-    // end pointer, and when it does we swap the
-    // pivot with element on end pointer
-    if start < end then
-    
-        // Increment the start pointer till it finds an 
-        // element greater than  pivot 
-        s := incUntil(s, size(v2), v2,pivot);
+    def decUntil proc(end, arr, piv) {
+        if arr[end] > piv then
+            decUntil(end - 1, arr, piv)
+        else
+            end;
+    };
+                
+    def partition proc(s,e,v2) {
+        println("parition");
+        println(v2);
+        println("pivot index is " + s);
+        println("end is " + e);
 
-        // Decrement the end pointer till it finds an 
-        // element less than pivot
-        e := decUntil(e,v2,pivot);
-    
-        // If start and end have not crossed each other, 
-        // swap the numbers on start and end
-        if start < end then
-            tmp := v2[s];
-            v2[s] := v2[e];
-            v2[e] := tmp;
+        pivot_index := s;
+        pivot := v2[pivot_index];
 
-    // Swap pivot element with element on end pointer.
-    // This puts pivot on its correct sorted place.
-    tmp:=v2[e];
-    v2[e] := v2[pivot_index];
-    v2[pivot_index] := v2[e];
-    
-    // Returning end pointer to divide the array into 2
-    e;
-
-def helper proc(start, end, v)       
-    if start < end then
-        p := partition(start,end,v);
-        helper(start, p-1, v)
-        helper(p+1, end, v)
-
-def quicksort proc(vec)
-    helper(0, size(vec) -1, vec);
+        // This loop runs till start pointer crosses 
+        // end pointer, and when it does we swap the
+        // pivot with element on end pointer
+        if s < e then {
         
+            // Increment the start pointer till it finds an 
+            // element greater than  pivot 
+            s := incUntil(s, size(v2), v2,pivot);
+
+            println(s);
+
+            // Decrement the end pointer till it finds an 
+            // element less than pivot
+            e := decUntil(e,v2,pivot);
+
+            println(e);
+        
+            // If start and end have not crossed each other, 
+            // swap the numbers on start and end
+            if s < e then {
+                tmp := v2[s];
+                v2[s] := v2[e];
+                v2[e] := tmp;
+            };
+
+        println(v2);
+
+        };
+
+        // Swap pivot element with element on end pointer.
+        // This puts pivot on its correct sorted place.
+        tmp:=v2[e];
+        v2[e] := v2[pivot_index];
+        v2[pivot_index] := tmp;
+        
+        println(v2);
+
+        // Returning end pointer to divide the array into 2
+        e;
+    };
+
+    def helper proc(start, end, v)  { 
+        println("helper");
+
+        if start < end then {
+            p := partition(start,end,v);
+            helper(start, p - 1, v);
+            helper(p + 1, end, v);
+        };
+
+        v;
+    };
+
+
+    helper(0, size(vec) - 1, vec);
+
+};
+        
+
+v := [: 10, 80, 30, 90, 40, 50, 70 :];
+
+quicksort(v)

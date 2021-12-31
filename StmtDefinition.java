@@ -2,7 +2,10 @@
 public class StmtDefinition extends Statement {
 
     String var;
-    //Exp exp;
+    ExpVecCall expV;
+    public void setVar(String var) {
+        this.var = var;
+    }
 
     public StmtDefinition(String id, Exp e) {
 	super(":=", e);
@@ -10,8 +13,17 @@ public class StmtDefinition extends Statement {
 	// exp = e;
     }
 
-    public String getVar(){
-	return var;
+    public StmtDefinition(ExpVecCall v, Exp e) {
+        super(":=", e);
+        expV = v;
+    }
+
+    public String getVar() {
+        return var;
+    }
+    
+    public ExpVecCall getExpVecCall() {
+        return this.expV;
     }
 
     public Exp getExp() {

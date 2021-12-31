@@ -127,8 +127,7 @@ abstract public class SMPLDataType<T> {
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLBoolean relationalCmp(Cmp cmp, SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException(
-                "Comparison not allowed between types " + this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException( String.format(              "Comparison not allowed between types <%s> %s and <%s> %s", this.getClass(), this,  o.getClass(), o));
     }
 
     /**

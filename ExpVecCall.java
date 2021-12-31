@@ -1,9 +1,8 @@
-import org.w3c.dom.NameList;
-
 public class ExpVecCall extends Exp {
     ExpVar id;
     ExpVector vec;
     Exp num;
+    
     public ExpVecCall(ExpVar name, Exp place){
         super("vector call",name);
         id=name;

@@ -4,7 +4,7 @@ import java.util.Arrays;
 /**
  * Represents pairs in SMPL
  */
-public class SMPLPair extends SMPLDataType<ArrayList<? extends SMPLDataType>>{
+public class SMPLPair extends SMPLDataType<ArrayList<SMPLDataType>>{
 
     public SMPLPair(SMPLDataType first, SMPLDataType second){
         super(new ArrayList<>(Arrays.asList(first, second)),true);

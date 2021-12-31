@@ -7,9 +7,9 @@ import java.util.Arrays;
  * 
  * Not sure if this actually needs to be implemented as a list of SMPLPairs as described
  */
-public class SMPLList extends SMPLDataType<ArrayList<? extends SMPLDataType>> {
+public class SMPLList extends SMPLDataType<ArrayList<SMPLDataType>> {
 
-    public SMPLList(ArrayList<? extends SMPLDataType> data) {
+    public SMPLList(ArrayList<SMPLDataType> data) {
         super(data,true);
     }
 
