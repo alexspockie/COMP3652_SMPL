@@ -63,11 +63,11 @@ alphanum = {alpha}|[0-9]
 
 //ndbegin = [^\(\)\[\]\{\}\"\',:#0-9]
 
-ndbegin = [a-zA-z\+\-\*\/\%\^\?\.\!]
+ndbegin = [a-zA-Z\+\-\*\/\%\^\?\.\!]
 
-ndmiddle = [a-zA-z\+\-\*\/\%\^\?\.\!\#]
+ndmiddle = [a-zA-Z\+\-\*\/\%\^\?\.\!\#]
 
-ban = [a-zA-z0-9\+\-\*\/\%\^\?\.\!\#]
+ban = [a-zA-Z0-9\+\-\*\/\%\^\?\.\!\#]
 
 
 var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*

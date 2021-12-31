@@ -6,9 +6,17 @@ public class ExpList extends Exp{
         super("list of objects",args);
         listcon=args;
     }
-    public ArrayList<Exp> getList(){
+
+    public ExpList(){
+        super("list of objects",new ArrayList<>());
+        listcon=new ArrayList<>();
+    }
+
+    public ArrayList<Exp> getList() {
         return listcon;
     }
+    
+
     @Override
     public <S, T> T visit(Visitor<S, T> v, S arg) throws VisitException, NoSuchMethodException {
         return v.visitExpList(this, arg);
