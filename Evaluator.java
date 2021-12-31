@@ -528,5 +528,12 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 			throws VisitException, NoSuchMethodException {
 		return new SMPLString(exp.getVal());
 	}
+
+	@Override
+	public SMPLDataType visitExpNegate(ExpNegate exp, Environment arg) throws VisitException, NoSuchMethodException {
+		SMPLDataType val = exp.getSubTree(0).visit(this, arg);
+
+		return val.negate();
+	}
 }
 // might possibly need to add Booleans

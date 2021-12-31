@@ -156,7 +156,6 @@ stmt ::= definition:d SEMI{: RESULT = d; :}|
 exptop ::= expo:e {: RESULT = e; :}| 
 			expc:e {: RESULT = e; :}|
 	   proc:p {: RESULT = p; :}|
-	   builtin:b {: RESULT = b; :} |
 	   comment:c{: RESULT = c; :};//this replaced expression
 
 expo ::= ifTheno:i {: RESULT = i; :};
@@ -225,11 +224,12 @@ predList ::= predList:plst pred:p {: plst.add(p);
 				result.add(p);
 				RESULT = result; :};
 
-list ::= LBRACKET argListE:alst RBRACKET {: RESULT = new ExpList(alst); :} |
-		LIST LPAREN argListE:alst RPAREN {: RESULT = new ExpList(alst); :}; // add other list form //fix rewsult
+list ::= LBRACKET argList:alst RBRACKET {: RESULT = new ExpList(alst); :} |
+		LIST LPAREN argList:alst RPAREN {: RESULT = new ExpList(alst); :} |
+		ELIST {: RESULT = new ExpList(); :}; // add other list form //fix rewsult
 //make new class and change into other smpl list when evaluating?
 
-vector ::= LBRACKET COLON argListE:alst COLON RBRACKET {: RESULT = new ExpVector(alst); :}|
+vector ::= LBRACKET COLON argList:alst COLON RBRACKET {: RESULT = new ExpVector(alst); :}|
 			LBRACKET sizeList:slst RBRACKET{: RESULT = null; :};
 
 size ::= exptop:e1 COLON exptop:e2 {: RESULT = new ExpSize(e1,e2); :};
@@ -241,7 +241,9 @@ sizeList ::= sizeList:slst COMMA size:s {: slst.add(s);
 				result.add(s);
 				RESULT = result; :};
 
-vectorCall ::= vector:v LBRACKET exptop:e RBRACKET	{: RESULT = new ExpVecCall(v,e); :};	//needs a variable too		
+vectorCall ::= vector:v LBRACKET exptop:e RBRACKET	
+						{: RESULT = new ExpVecCall(v,e); :} | 
+			VAR:v LBRACKET exptop:e RBRACKET {: RESULT = new ExpVecCall(new ExpVar(v),e); :};	//needs a variable too		
 
 /* New keyword functions */
 proc ::= PROC VAR:v stmtList:body {: RESULT = null; :} |
@@ -389,5 +391,7 @@ atom ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
 	   funCall:fc {: RESULT = fc; :}|
 	   case:c {: RESULT = c; :}|
 	   let:l {: RESULT = l; :}|
-	   read:r {: RESULT = r; :};
+	   read:r {: RESULT = r; :} |
+	   builtin:b {: RESULT = b; :};
+
 empty ::= ;
