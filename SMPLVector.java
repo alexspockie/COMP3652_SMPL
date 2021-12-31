@@ -8,6 +8,7 @@ public class SMPLVector extends SMPLDataType<ArrayList<? extends SMPLDataType>> 
 
     public SMPLVector(ArrayList<? extends SMPLDataType> data) {
         super(data);
+        isCompound = true;
     }
 
     public SMPLVector(SMPLDataType ... data) {

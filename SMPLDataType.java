@@ -4,6 +4,7 @@
 abstract public class SMPLDataType<T> {
 
     protected T data;
+    protected Boolean isCompound =false;
 
     /**
      * @param data

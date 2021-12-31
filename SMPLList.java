@@ -11,6 +11,7 @@ public class SMPLList extends SMPLDataType<ArrayList<? extends SMPLDataType>> {
 
     public SMPLList(ArrayList<? extends SMPLDataType> data) {
         super(data);
+        isCompound = true;
     }
 
     public SMPLList(SMPLDataType ... data) {

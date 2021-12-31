@@ -60,6 +60,9 @@ terminal AMP, BAR, TILDE;
 // comments
 terminal LCOM, BCOMS , BCOME, NL;
 
+// builtins
+terminal ISPAIR, PAIR, ISEQV, ISEQ,CAR, CDR, SIZE, LIST, SUBSTR;
+
 // terminals with values
 terminal Integer INT;
 terminal String VAR;
@@ -119,6 +122,8 @@ non terminal ArrayList<Exp> explist;
 non terminal Exp term;
 non terminal Exp factor;
 non terminal empty;
+non terminal Exp builtin;
+
 
 /* Grammar rules */
 
@@ -146,6 +151,7 @@ stmt ::= definition:d SEMI{: RESULT = d; :}|
 exptop ::= expo:e {: RESULT = e; :}| 
 			expc:e {: RESULT = e; :}|
 	   proc:p {: RESULT = p; :}|
+	   builtin:b {: RESULT = b; :} |
 	   comment:c{: RESULT = c; :};//this replaced expression
 
 expo ::= ifTheno:i {: RESULT = i; :};
@@ -165,6 +171,18 @@ explist ::= explist:lst exptop:e{:
 			RESULT = new StmtFunDefn(v,pe,s); :} |
 		 VAR:v LPAREN paramList:pe RPAREN EQUAL expression:e SEMI {:
 			RESULT = new StmtFunDefn(v,pe,e); :}; */
+
+builtin ::= list:l {: RESULT = l; :} |
+			PAIR LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpPair(e1, e2); :} |
+			CAR LPAREN exptop:e1 RPAREN {: RESULT = new ExpCar(e1); :} |
+			CDR LPAREN exptop:e1 RPAREN {: RESULT = new ExpCdr(e1); :} |
+			ISPAIR LPAREN exptop:e1 RPAREN {: RESULT = new ExpIsPair(e1); :} |
+			SIZE LPAREN exptop:e1 RPAREN{: RESULT = new ExpGetSize(e1); :} |
+			vector:v {: RESULT = v; :} |
+			vectorCall:vc {: RESULT = vc; :} |
+			ISEQ LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEq(e1, e2);  :} |
+			ISEQV LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEqv(e1, e2); :} |
+			SUBSTR LPAREN exptop:e1 COMMA exptop:e2 COMMA exptop:e3 RPAREN {: RESULT = new ExpSubstr(e1, e2, e3); :};
 
 
 paramList ::= paramList:plst COMMA VAR:v {:
@@ -202,7 +220,8 @@ predList ::= predList:plst pred:p {: plst.add(p);
 				result.add(p);
 				RESULT = result; :};
 
-list ::= LBRACKET argListE:alst RBRACKET {: RESULT = new ExpList(alst); :}; // add other list form //fix rewsult
+list ::= LBRACKET argListE:alst RBRACKET {: RESULT = new ExpList(alst); :} |
+		LIST LPAREN argListE:alst RPAREN {: RESULT = new ExpList(alst); :}; // add other list form //fix rewsult
 //make new class and change into other smpl list when evaluating?
 
 vector ::= LBRACKET COLON argListE:alst COLON RBRACKET {: RESULT = new ExpVector(alst); :}|
@@ -312,7 +331,7 @@ argList ::= argList:alst COMMA exptop:e {:
 				RESULT = result; :};
 
 
-argListE ::= argList:al {:RESULT=al;:} | empty:em{:RESULT=new ArrayList<>();:};
+argListE ::= argList:al {:RESULT=al;:} ;
 
 funCall ::= VAR:v LPAREN argList:ae RPAREN {:
 			RESULT = new ExpFunCall(v,ae); :};//|
