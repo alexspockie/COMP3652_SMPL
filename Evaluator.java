@@ -427,7 +427,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 			SMPLPair p = SMPLPair.class.cast(expCar.getSubTree(0).visit(this, arg));
 			return p.getValue().get(0);
 		} else {
-			throw new VisitException("", new NoSuchMethodException("Builtin function car only accepts SMPL pairs"));
+			throw new NoSuchMethodException("Builtin function car only accepts SMPL pairs");
 		}
 	}
 
@@ -437,7 +437,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 			SMPLPair p = SMPLPair.class.cast(expCdr.getSubTree(0).visit(this, arg));
 			return p.getValue().get(1);
 		} else {
-			throw new VisitException("", new NoSuchMethodException("Builtin function cdr only accepts SMPL pairs"));
+			throw new NoSuchMethodException("Builtin function cdr only accepts SMPL pairs");
 		}
 	}
 
@@ -448,7 +448,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 			SMPLVector p = SMPLVector.class.cast(exp.getSubTree(0).visit(this, arg));
 			return new SMPLInt(p.getValue().size());
 		} else {
-			throw new VisitException("", new NoSuchMethodException("Builtin function size only accepts SMPL vectors"));
+			throw new NoSuchMethodException("Builtin function size only accepts SMPL vectors");
 		}
 	}
 
@@ -462,7 +462,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		} else if (!e1.isCompound && !e2.isCompound) {
 			return new SMPLBoolean(e1.getValue().equals(e2.getValue()));
 		}else{
-			throw new VisitException("", new NoSuchMethodException(e1 + " and " + e2 + " cannot be compared for "));
+			throw new NoSuchMethodException(e1 + " and " + e2 + " cannot be compared for ");
 		}
 	}
 
@@ -471,22 +471,20 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		SMPLDataType e1 = exp.getSubTree(0).visit(this, arg);
 		SMPLDataType e2 = exp.getSubTree(1).visit(this, arg);
 
-		if (e1.isCompound && e2.isCompound) {
+		if (e1.isCompound == true && e2.isCompound) {
 			if ((e1.getClass() == SMPLPair.class && e2.getClass() == SMPLPair.class)
-					&& (e1.getClass() == SMPLList.class && e2.getClass() == SMPLList.class)
-					&& (e1.getClass() == SMPLVector.class && e2.getClass() == SMPLVector.class)) {
+					|| (e1.getClass() == SMPLList.class && e2.getClass() == SMPLList.class)
+					|| (e1.getClass() == SMPLVector.class && e2.getClass() == SMPLVector.class)) {
 				return new SMPLBoolean(e1.getValue().equals(e2.getValue()));
 			} else {
-				throw new VisitException("",
-						new NoSuchMethodException(
-								e1 + " and " + e2 + " cannot be compared for structural equivalence"));
+				throw new NoSuchMethodException(
+								e1 + " and " + e2 + " cannot be compared for structural equivalence due to type mismatch");
 			}
 
 		} else if (!e1.isCompound && !e2.isCompound) {
 			return new SMPLBoolean(e1.getValue().equals(e2.getValue()));
 		} else {
-			throw new VisitException("",
-					new NoSuchMethodException(e1 + " and " + e2 + " cannot be compared for structural equivalence"));
+			throw new NoSuchMethodException(e1 + " and " + e2 + " cannot be compared for structural equivalence");
 		}
 	}
 
@@ -521,8 +519,14 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 			return new SMPLString(s.getValue().substring(start.getValue(), end.getValue()));
 
 		} catch (Exception e) {
-			throw new VisitException("", e);
+			throw e;
 		}
+	}
+
+	@Override
+	public SMPLDataType visitExpLitString(ExpLitString exp, Environment arg)
+			throws VisitException, NoSuchMethodException {
+		return new SMPLString(exp.getVal());
 	}
 }
 // might possibly need to add Booleans

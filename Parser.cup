@@ -384,6 +384,7 @@ factor ::= TILDE atom:a {:
 atom ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
           FLOAT:ilit {:RESULT = new ExpLitDouble(ilit);:}|
           VAR:var {: RESULT = new ExpVar(var); :} |
+		  STRING:s {: RESULT = new ExpLitString(s); :} |
 	   LPAREN exptop:e RPAREN {: RESULT = e; :}|
 	   funCall:fc {: RESULT = fc; :}|
 	   case:c {: RESULT = c; :}|

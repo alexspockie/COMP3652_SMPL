@@ -897,8 +897,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           case 97: break;
           case 28: 
             { buffer.setLength(0); 
-				yybegin(STRING); 
-				return new Symbol(sym.DQUOTE, yytext());
+				yybegin(STRING);
             } 
             // fall through
           case 98: break;
@@ -910,7 +909,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           case 99: break;
           case 30: 
             { yybegin(YYINITIAL);
-				return new Symbol(sym.STRING,buffer);
+				return new Symbol(sym.STRING,buffer.toString());
             } 
             // fall through
           case 100: break;

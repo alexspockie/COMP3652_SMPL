@@ -67,4 +67,6 @@ public interface Visitor<S, T> {
     public T visitExpIsPair(ExpIsPair expIsPair, S arg) throws VisitException,NoSuchMethodException;
 
     public T visitExpSubstr(ExpSubstr expSubstr, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpLitString(ExpLitString expLitString, S arg) throws VisitException,NoSuchMethodException;
 }

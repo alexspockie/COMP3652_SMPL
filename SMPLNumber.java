@@ -4,7 +4,7 @@
 abstract public class SMPLNumber<T> extends SMPLDataType<T> {
 
     public SMPLNumber(T data) {
-        super(data);
+        super(data, false);
     }
 
     @Override

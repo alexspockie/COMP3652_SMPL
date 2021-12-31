@@ -174,7 +174,6 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 <YYINITIAL> \" {
 				buffer.setLength(0); 
 				yybegin(STRING); 
-				return new Symbol(sym.DQUOTE, yytext());
 			}
 
 <YYINITIAL>    {var} {
@@ -189,7 +188,7 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 
 <STRING> \" {
 				yybegin(YYINITIAL);
-				return new Symbol(sym.STRING,buffer);
+				return new Symbol(sym.STRING,buffer.toString());
 			}
 
 

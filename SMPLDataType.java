@@ -4,13 +4,14 @@
 abstract public class SMPLDataType<T> {
 
     protected T data;
-    protected Boolean isCompound =false;
+    protected Boolean isCompound;
 
     /**
      * @param data
      */
-    public SMPLDataType(T data) {
+    public SMPLDataType(T data, boolean compound) {
         this.data = data;
+        this.isCompound = compound;
     }
 
     /**
