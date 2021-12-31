@@ -6,15 +6,17 @@
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int BOOLLIT = 50;
+  public static final int BOOLLIT = 59;
   public static final int POW = 31;
   public static final int LBRACKET = 24;
-  public static final int CHAR = 48;
+  public static final int CHAR = 57;
   public static final int READINT = 11;
+  public static final int CAR = 47;
   public static final int CASE = 9;
+  public static final int CDR = 48;
   public static final int LPAREN = 14;
   public static final int SEMI = 16;
-  public static final int INT = 43;
+  public static final int INT = 52;
   public static final int PRINTLN = 13;
   public static final int MINUS = 27;
   public static final int TILDE = 38;
@@ -33,30 +35,37 @@ public class sym {
   public static final int IF = 6;
   public static final int EOF = 0;
   public static final int AMP = 36;
-  public static final int EQUAL = 46;
+  public static final int EQUAL = 55;
   public static final int RBRACKET = 25;
   public static final int DQUOTE = 20;
+  public static final int SIZE = 49;
   public static final int error = 1;
   public static final int MUL = 28;
   public static final int MOD = 30;
-  public static final int COMPARISON = 45;
+  public static final int ISPAIR = 43;
+  public static final int PAIR = 44;
+  public static final int COMPARISON = 54;
   public static final int COLON = 17;
   public static final int LBRACE = 21;
   public static final int ELSE = 8;
   public static final int NL = 42;
   public static final int READ = 10;
-  public static final int FLOAT = 47;
+  public static final int ISEQV = 45;
+  public static final int LIST = 50;
+  public static final int SUBSTR = 51;
+  public static final int FLOAT = 56;
   public static final int LET = 4;
   public static final int THEN = 7;
   public static final int RBRACE = 22;
   public static final int LCOM = 39;
-  public static final int STRING = 49;
+  public static final int STRING = 58;
   public static final int PROC = 2;
   public static final int DEF = 5;
   public static final int ELIST = 19;
   public static final int AT = 18;
-  public static final int VAR = 44;
+  public static final int VAR = 53;
   public static final int PRINT = 12;
+  public static final int ISEQ = 46;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -101,6 +110,15 @@ public class sym {
   "BCOMS",
   "BCOME",
   "NL",
+  "ISPAIR",
+  "PAIR",
+  "ISEQV",
+  "ISEQ",
+  "CAR",
+  "CDR",
+  "SIZE",
+  "LIST",
+  "SUBSTR",
   "INT",
   "VAR",
   "COMPARISON",

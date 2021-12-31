@@ -4,11 +4,14 @@
 abstract public class SMPLDataType<T> {
 
     protected T data;
+    protected Boolean isCompound;
+
     /**
      * @param data
      */
-    public SMPLDataType(T data) {
+    public SMPLDataType(T data, boolean compound) {
         this.data = data;
+        this.isCompound = compound;
     }
 
     /**
@@ -22,80 +25,94 @@ abstract public class SMPLDataType<T> {
 
     /**
      * Invoked for the + operator. Adds this and o together and resturns the result.
+     * 
      * @param o
      * @return the result
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLDataType add(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator + not allowed between types "+ this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException(
+                "Operator + not allowed between types " + this.getClass() + " and " + o.getClass());
     }
 
     /**
      * Invoked for the - operator. Subtracts o from this and returns the result.
+     * 
      * @param o
-     * @return 
+     * @return
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLNumber subtract(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator - not allowed between types "+ this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException(
+                "Operator - not allowed between types " + this.getClass() + " and " + o.getClass());
     }
 
     /**
      * Invoked for the * operator
+     * 
      * @param o
      * @return The product of this multiplied by o
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLNumber multiply(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator * not allowed between types "+ this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException(
+                "Operator * not allowed between types " + this.getClass() + " and " + o.getClass());
     }
 
     /**
      * Invoked for the / operator
+     * 
      * @param o
      * @return The product of this divided by o
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLNumber divide(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator / not allowed between types "+ this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException(
+                "Operator / not allowed between types " + this.getClass() + " and " + o.getClass());
     }
 
     /**
      * Invoked for the % operator
+     * 
      * @param o
      * @return The product of this modulus o
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLNumber mod(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator % not allowed between types "+ this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException(
+                "Operator % not allowed between types " + this.getClass() + " and " + o.getClass());
     }
 
     /**
      * Invoked for the ^ operator
+     * 
      * @param o
      * @return The product of this raised to the power of o
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLNumber pow(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator ^ not allowed between types "+ this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException(
+                "Operator ^ not allowed between types " + this.getClass() + " and " + o.getClass());
     }
 
     /**
-     * Invoked for the unary - operator. 
+     * Invoked for the unary - operator.
+     * 
      * @return The negative of the value of this
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLNumber negate() throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator - not allowed on type "+ this.getClass());
+        throw new NoSuchMethodException("Operator - not allowed on type " + this.getClass());
     }
 
     // bitwise
 
     public SMPLInt bitwiseOp(BitwiseOp op, SMPLDataType o) throws NoSuchMethodException {
-        if (o != null) {
-            return op.apply(this, o);
+        if (o == null) {
+            throw new NoSuchMethodException("Bitwise operators not allowed on type " + this.getClass());
         } else {
-            return op.apply(this);
+            throw new NoSuchMethodException(
+                    "Bitwise operators not allowed between type " + this.getClass() + " and type " + o.getClass());
         }
     }
 
@@ -103,43 +120,49 @@ abstract public class SMPLDataType<T> {
 
     /**
      * Invoked for the comparisons
+     * 
      * @param o
      * @param cmp The comparison operator
      * @return The result of this compared to o
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLBoolean relationalCmp(Cmp cmp, SMPLDataType o) throws NoSuchMethodException {
-        return cmp.apply(this, o);
+        throw new NoSuchMethodException(
+                "Comparison not allowed between types " + this.getClass() + " and " + o.getClass());
     }
 
     /**
      * Invoked for the 'and' operator
+     * 
      * @param o
      * @return The result of this AND o
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLBoolean logicalAnd(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Logical operator and not allowed between types "+ this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException(
+                "Logical operator and not allowed between types " + this.getClass() + " and " + o.getClass());
     }
 
     /**
      * Invoked for the 'or' operator
+     * 
      * @param o
      * @return The resut of this OR o
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLBoolean logicalOr(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Logical operator or not allowed between types "+ this.getClass() + " and " + o.getClass());
+        throw new NoSuchMethodException(
+                "Logical operator or not allowed between types " + this.getClass() + " and " + o.getClass());
     }
-
 
     /**
      * Invoked for the 'not' operator
+     * 
      * @return The resut of NOT this
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLBoolean logicalNot() throws NoSuchMethodException {
-        throw new NoSuchMethodException("Logical operator not not allowed on type "+ this.getClass());
+        throw new NoSuchMethodException("Logical operator not not allowed on type " + this.getClass());
     }
 
     @Override

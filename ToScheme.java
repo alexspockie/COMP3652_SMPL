@@ -247,4 +247,58 @@ public class ToScheme implements Visitor<Void, String> {
 		return null;
 	}
 
+	@Override
+	public String visitExpPair(ExpPair expPair, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpCar(ExpCar expCar, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpCdr(ExpCdr expCdr, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpGetSize(ExpGetSize expGetSize, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpIsEq(ExpIsEq expIsEq, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpIsEqv(ExpIsEqv expIsEqv, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpIsPair(ExpIsPair expIsPair, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpSubstr(ExpSubstr expSubstr, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpLitString(ExpLitString expLitString, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

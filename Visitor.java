@@ -51,4 +51,22 @@ public interface Visitor<S, T> {
     public T visitExpDouble(ExpLitDouble exp, S arg) throws VisitException,NoSuchMethodException;//literal double
     
     public T visitExpVar(ExpVar exp, S arg) throws VisitException,NoSuchMethodException;//var
+
+    public T visitExpPair(ExpPair expPair, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpCar(ExpCar expCar, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpCdr(ExpCdr expCdr, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpGetSize(ExpGetSize expGetSize, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpIsEq(ExpIsEq expIsEq, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpIsEqv(ExpIsEqv expIsEqv, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpIsPair(ExpIsPair expIsPair, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpSubstr(ExpSubstr expSubstr, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpLitString(ExpLitString expLitString, S arg) throws VisitException,NoSuchMethodException;
 }

@@ -137,6 +137,16 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 <YYINITIAL>	"read" {return new Symbol(sym.READ);}
 <YYINITIAL>	"readint" {return new Symbol(sym.READINT);}
 
+<YYINITIAL>	"pair?" {return new Symbol(sym.ISPAIR);}
+<YYINITIAL>	"pair" {return new Symbol(sym.PAIR);}
+<YYINITIAL>	"cdr" {return new Symbol(sym.CDR);}
+<YYINITIAL>	"car" {return new Symbol(sym.CAR);}
+<YYINITIAL>	"list" {return new Symbol(sym.LIST);}
+<YYINITIAL>	"size" {return new Symbol(sym.SIZE);}
+<YYINITIAL>	"eqv?" {return new Symbol(sym.ISEQV);}
+<YYINITIAL>	"equal?" {return new Symbol(sym.ISEQ);}
+<YYINITIAL>	"substr" {return new Symbol(sym.SUBSTR);}
+
 <YYINITIAL> "#t" { return new Symbol(sym.BOOLLIT, true);}
 <YYINITIAL> "#f" { return new Symbol(sym.BOOLLIT, false);}
 
@@ -156,7 +166,7 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 			return new Symbol(sym.FLOAT, new Double(yytext()));
 			}
 
-<YYINITIAL> (#c[A-ZA-Z]) | (#c\\[n\t]) {return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
+<YYINITIAL> (#c[A-Za-z]) | (#c\\[n\\t]) {return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
 
 <YYINITIAL> #u[A-F0-9]{4} {return new Symbol(sym.CHAR, Character.toChars(Integer.parseInt(yytext().substring(2))));}
 
@@ -164,7 +174,6 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 <YYINITIAL> \" {
 				buffer.setLength(0); 
 				yybegin(STRING); 
-				return new Symbol(sym.DQUOTE, yytext());
 			}
 
 <YYINITIAL>    {var} {
@@ -179,7 +188,7 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 
 <STRING> \" {
 				yybegin(YYINITIAL);
-				return new Symbol(sym.STRING,buffer);
+				return new Symbol(sym.STRING,buffer.toString());
 			}
 
 

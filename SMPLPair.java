@@ -7,6 +7,6 @@ import java.util.Arrays;
 public class SMPLPair extends SMPLDataType<ArrayList<? extends SMPLDataType>>{
 
     public SMPLPair(SMPLDataType first, SMPLDataType second){
-        super(new ArrayList<>(Arrays.asList(first, second)));
+        super(new ArrayList<>(Arrays.asList(first, second)),true);
     }
 }

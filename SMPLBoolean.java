@@ -4,7 +4,7 @@
 public class SMPLBoolean extends SMPLDataType<Boolean> {
 
     public SMPLBoolean(Boolean data) {
-        super(data);
+        super(data, false);
     }
 
     @Override

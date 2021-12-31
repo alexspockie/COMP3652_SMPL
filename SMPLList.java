@@ -10,11 +10,11 @@ import java.util.Arrays;
 public class SMPLList extends SMPLDataType<ArrayList<? extends SMPLDataType>> {
 
     public SMPLList(ArrayList<? extends SMPLDataType> data) {
-        super(data);
+        super(data,true);
     }
 
     public SMPLList(SMPLDataType ... data) {
-        super(new ArrayList<>(Arrays.asList(data)));
+        super(new ArrayList<>(Arrays.asList(data)), true);
     }
 
     

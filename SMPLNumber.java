@@ -4,7 +4,7 @@
 abstract public class SMPLNumber<T> extends SMPLDataType<T> {
 
     public SMPLNumber(T data) {
-        super(data);
+        super(data, false);
     }
 
     @Override
@@ -42,6 +42,11 @@ abstract public class SMPLNumber<T> extends SMPLDataType<T> {
     public SMPLNumber mod(SMPLDataType o) throws NoSuchMethodException {
         throw new NoSuchMethodException("Not Implemented");
 
+    }
+
+    @Override
+    public SMPLBoolean relationalCmp(Cmp cmp, SMPLDataType o) throws NoSuchMethodException {
+        return cmp.apply(this, o);
     }
 
     public static int toJavaInt(SMPLDataType n) throws NoSuchMethodException {
