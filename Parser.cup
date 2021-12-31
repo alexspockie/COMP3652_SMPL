@@ -90,6 +90,7 @@ non terminal Exp logExp;
 non terminal Exp logExpO;
 non terminal Exp logExpA;
 non terminal Exp logExpN;
+non terminal Exp logFactor;
 non terminal ArrayList<String> paramList;
 non terminal ArrayList<String> paramListE;
 non terminal ArrayList<Exp> argList;
@@ -110,10 +111,12 @@ non terminal StmtExpDefn def;
 non terminal Exp case;
 non terminal Exp expSeq;
 non terminal Exp mulExp;
+non terminal Exp print;
 non terminal Exp read;
 non terminal Exp comment;
 /* **** */
 
+non terminal Exp bitexp;        // non if expression with & and |
 non terminal Exp expression;    //non if expression
 non terminal Exp exptop;		//top level exp
 non terminal Exp expo;      	//open
@@ -121,6 +124,7 @@ non terminal Exp expc;			//closed
 non terminal ArrayList<Exp> explist;
 non terminal Exp term;
 non terminal Exp factor;
+non terminal Exp atom; //lowest level expression
 non terminal empty;
 non terminal Exp builtin;
 
@@ -146,7 +150,8 @@ stmtList ::= stmtList:lst stmt:s {:
 
 stmt ::= definition:d SEMI{: RESULT = d; :}|
 	  exptop:e SEMI {: RESULT = new Statement(e); :} |
-	 def:d SEMI{:RESULT = d; :}; ////expression:e {: RESULT = new Statement(e); :}SEMI;//
+	 def:d SEMI{:RESULT = d; :}| ////expression:e {: RESULT = new Statement(e); :}SEMI|
+	 print:p SEMI {: RESULT = new Statement(p); :};
 
 exptop ::= expo:e {: RESULT = e; :}| 
 			expc:e {: RESULT = e; :}|
@@ -156,7 +161,7 @@ exptop ::= expo:e {: RESULT = e; :}|
 
 expo ::= ifTheno:i {: RESULT = i; :};
 
-expc ::= expression:e {: RESULT = e; :}|
+expc ::= bitexp:e {: RESULT = e; :}|
 		ifThenc:i {: RESULT = i; :};
 
 explist ::= explist:lst exptop:e{:
@@ -266,9 +271,18 @@ logExpO ::= logExpO:e1 OR logExpA:e2 {: RESULT = new ExpComp(e1,e2,"OR"); :} |
 logExpA ::= logExpA:e1 AND logExpN:e2 {: RESULT = new ExpComp(e1,e2,"AND"); :}|
 			logExpN:e {: RESULT = e; :};
 
-logExpN ::= NOT logExp:e {: RESULT = new ExpComp(e,null,"NOT"); :}|
-			logExp:e {: RESULT = e; :}|
-			LPAREN logExpO:e RPAREN {: RESULT = e; :};
+logExpN ::= NOT logExp:e {: RESULT = new ExpComp(e,e,"NOT"); :}|
+			logFactor:e {: RESULT = e; :};
+
+logFactor ::= logExp:e {: RESULT = e; :}|
+			LPAREN logExpO:e RPAREN {: RESULT = e; :}|
+			BOOLLIT:b {: 
+			Exp result;
+			if (b)
+				result = new ExpLitDouble(1D);
+			else
+				result = new ExpLitDouble(0D);
+			RESULT = result; :};
 
 /*ifThen ::= IF logExp:l THEN expression:e ELSE expression:e2 END {:
 			ArrayList<Exp> result = new ArrayList<>();
@@ -310,6 +324,9 @@ definition ::= VAR:v ASSIGN exptop:e {:
 
 //mulDef ::= paramList:plst ASSIGN argList:alst {: RESULT = null; :};
 
+print ::= PRINT LPAREN exptop:e RPAREN {: RESULT = new ExpPrint(e,"block"); :}|
+		PRINTLN LPAREN exptop:e RPAREN {: RESULT = new ExpPrint(e,"ln"); :};
+
 
 read ::= READ LPAREN RPAREN {: RESULT = new ExpRead("string"); :}|
 		READINT LPAREN RPAREN {:RESULT = new ExpRead("int"); :};
@@ -338,6 +355,11 @@ funCall ::= VAR:v LPAREN argList:ae RPAREN {:
 			//LPAREN proc:p RPAREN LPAREN argList:ae RPAREN {: RESULT = null; :}|
 			//LPAREN funCall:fc RPAREN LPAREN argList:ae RPAREN {: RESULT = null; :};
 
+bitexp ::= bitexp:b AMP expression:e {:
+			RESULT = new ExpBit(b,e,BitwiseOp.AND); :} |
+		bitexp:b BAR expression:e {:
+			RESULT = new ExpBit(b,e,BitwiseOp.OR); :} |
+		expression:e {: RESULT = e; :};
 
 expression ::= 	expression:e PLUS term:t {:
 			RESULT = new ExpAdd(e, t); :} |
@@ -351,13 +373,20 @@ term ::= term:t MUL factor:f {:
 		RESULT = new ExpDiv(t, f); :} |
 	 term:t MOD factor:f {:
 		RESULT = new ExpMod(t, f); :} |
-	 factor:f {: RESULT = f; :}; 
+	 factor:f {: RESULT = f; :};
 
-factor ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
+factor ::= TILDE atom:a {:
+			RESULT = new ExpBit(a,a,BitwiseOp.NOT); :} |
+		atom:a  POW factor:f {:
+			RESULT = new ExpPow(a,f); :}|
+		atom:a {: RESULT = a; :};
+
+atom ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
           FLOAT:ilit {:RESULT = new ExpLitDouble(ilit);:}|
           VAR:var {: RESULT = new ExpVar(var); :} |
 	   LPAREN exptop:e RPAREN {: RESULT = e; :}|
 	   funCall:fc {: RESULT = fc; :}|
 	   case:c {: RESULT = c; :}|
-	   let:l {: RESULT = l; :};
+	   let:l {: RESULT = l; :}|
+	   read:r {: RESULT = r; :};
 empty ::= ;

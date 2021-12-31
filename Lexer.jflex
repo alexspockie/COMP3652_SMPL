@@ -76,6 +76,8 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 
 
 %%
+<YYINITIAL> "/*" ~"*/" {}
+<YYINITIAL> "//" ~{nl} {}
 
 <YYINITIAL>	{nl}	{//skip newline, but reset char counter
 			 yychar = 0;

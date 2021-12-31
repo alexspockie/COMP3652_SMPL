@@ -128,6 +128,18 @@ public class ToScheme implements Visitor<Void, String> {
 	String right = exp.getExpR().visit(this, arg);
 	return "(mod " + left + " " + right + ")";
     }
+    public String visitExpPow(ExpPow exp, Void arg)
+	throws VisitException, NoSuchMethodException {
+	String left = exp.getExpL().visit(this, arg);
+	String right = exp.getExpR().visit(this, arg);
+	return "(^ " + left + " " + right + ")";
+    }
+
+    public String visitExpBit(ExpBit exp, Void env)
+	throws VisitException {
+	// to be implemented
+	return "";
+    }
 
     public String visitExpLit(ExpLitInt exp, Void arg)
 	throws VisitException, NoSuchMethodException{

@@ -183,53 +183,71 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		val1 = exp.getExpL().visit(this, env);
 		val2 = exp.getExpR().visit(this, env);
 		return val1.subtract(val2);
-	}
+    }
 
-	public SMPLDataType visitExpMul(ExpMul exp, Environment env)
-			throws VisitException, NoSuchMethodException { // X
-		SMPLDataType val1, val2;
-		val1 = exp.getExpL().visit(this, env);
-		val2 = exp.getExpR().visit(this, env);
-		return val1.multiply(val2);
-	}
+    public SMPLDataType visitExpMul(ExpMul exp, Environment env)
+	throws VisitException, NoSuchMethodException { //X
+	SMPLDataType val1, val2;
+	val1 = exp.getExpL().visit(this, env);
+	val2 = exp.getExpR().visit(this, env);
+	return val1.multiply(val2);
+    }
 
-	public SMPLDataType visitExpDiv(ExpDiv exp, Environment env)
-			throws VisitException, NoSuchMethodException { // X
-		SMPLDataType val1, val2;
-		val1 = exp.getExpL().visit(this, env);
-		val2 = exp.getExpR().visit(this, env);
-		return val1.divide(val2);
-	}
+    public SMPLDataType visitExpDiv(ExpDiv exp, Environment env)
+	throws VisitException, NoSuchMethodException { //X
+	SMPLDataType val1, val2;
+	val1 = exp.getExpL().visit(this, env);
+	val2 = exp.getExpR().visit(this, env);
+	return val1.divide(val2);
+    }
 
-	public SMPLDataType visitExpMod(ExpMod exp, Environment env)
-			throws VisitException, NoSuchMethodException { // X
-		SMPLDataType val1, val2;
-		val1 = exp.getExpL().visit(this, env);
-		val2 = exp.getExpR().visit(this, env);
-		return val1.mod(val2);
-	}
+    public SMPLDataType visitExpMod(ExpMod exp, Environment env)
+	throws VisitException, NoSuchMethodException { //X
+	SMPLDataType val1, val2;
+	val1 = exp.getExpL().visit(this, env);
+	val2 = exp.getExpR().visit(this, env);
+	return val1.mod(val2);
+    }
 
-	public SMPLInt visitExpLit(ExpLitInt exp, Environment env)// Returns an SMPL Integer X
-			throws VisitException, NoSuchMethodException {
-		SMPLInt val1;
-		val1 = new SMPLInt(exp.getVal());
-		return val1;
-	}
+    public SMPLDataType visitExpPow(ExpPow exp, Environment env)
+	throws VisitException, NoSuchMethodException { //X
+	SMPLDataType val1, val2;
+	val1 = exp.getExpL().visit(this, env);
+	val2 = exp.getExpR().visit(this, env);
+	return val1.pow(val2);
+    }
 
-	public SMPLFloat visitExpDouble(ExpLitDouble exp, Environment env) // returns an SMPL Float X
-			throws VisitException, NoSuchMethodException {
-		SMPLFloat val1;
-		val1 = new SMPLFloat(exp.getVal());
-		return val1;
-	}
+    public SMPLDataType visitExpBit(ExpBit exp, Environment env)
+	throws VisitException, NoSuchMethodException { //X
+	SMPLDataType val1, val2;
+	val1 = exp.getExpL().visit(this, env);
+	if (exp.getS() == "~")
+		return exp.getC().apply(val1);
+	val2 = exp.getExpR().visit(this, env);
+	return exp.getC().apply(val1,val2);
+    }
 
-	public SMPLDataType visitExpVar(ExpVar exp, Environment env)// X
-			throws VisitException, NoSuchMethodException {
-		return env.get(exp.getVar());
-		// we get a string from the expression and use it to get whatever is in the
-		// environment
-	}
+    public SMPLInt visitExpLit(ExpLitInt exp, Environment env)//Returns an SMPL Integer X
+	throws VisitException, NoSuchMethodException {
+	SMPLInt val1;
+	val1=new SMPLInt(exp.getVal());
+	return val1;
+    }
 
+	public SMPLFloat visitExpDouble(ExpLitDouble exp, Environment env) //returns an SMPL Float X
+	throws VisitException, NoSuchMethodException {
+	SMPLFloat val1;
+	val1=new SMPLFloat(exp.getVal());
+	return val1;
+    }
+
+    public SMPLDataType visitExpVar(ExpVar exp, Environment env)//X
+	throws VisitException , NoSuchMethodException{
+	return env.get(exp.getVar()); 
+	//we get a string from the expression and use it to get whatever is in the environment
+    }
+
+	
 	@Override
 	public SMPLDataType visitExpBind(ExpBind bind, Environment arg) throws VisitException, NoSuchMethodException {// X
 		Exp ep = bind.getExp();
@@ -286,11 +304,10 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	@Override
 	public SMPLDataType visitExpCase(ExpCase ecase, Environment arg) throws VisitException, NoSuchMethodException { // X
 		// TODO Auto-generated method stub
-		ArrayList<ExpCClause> clauses = ecase.getPred();
-		for (int i = 0; i < clauses.size(); i++) {
-			if (clauses.get(i).isElse() == true
-					|| clauses.get(i).visit(this, arg).relationalCmp(Cmp.EQ, new SMPLInt(1)).getValue()) {
-				return clauses.get(i).visit(this, arg);
+		ArrayList<ExpCClause> clauses=ecase.getPred();
+		for(int i=0;i<clauses.size();i++){
+			if (clauses.get(i).isElse()==true || clauses.get(i).visit(this, arg).relationalCmp(Cmp.EQ, new SMPLInt(1)).getValue()){
+				return clauses.get(i).getCons().visit(this,arg);
 			}
 		}
 		return null;// should never reach here
@@ -332,10 +349,13 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	public SMPLDataType visitRead(ExpRead read, Environment arg) throws VisitException, NoSuchMethodException {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
-		if (read.getReadType() == "string") {
-			SMPLString result = new SMPLString(sc.nextLine());
-		} else {
-			SMPLInt result = new SMPLInt(sc.nextInt());
+		if(read.getReadType()=="string"){
+			System.out.println("Enter string here:");
+			SMPLString result=new SMPLString(sc.nextLine());
+		}
+		else{
+			System.out.println("Enter int here:");
+			SMPLInt result=new SMPLInt(sc.nextInt());
 		}
 		return result;
 	}

@@ -45,6 +45,8 @@ public interface Visitor<S, T> {
     public T visitExpMul(ExpMul exp, S arg) throws VisitException,NoSuchMethodException;//mul
     public T visitExpDiv(ExpDiv exp, S arg) throws VisitException,NoSuchMethodException;//div
     public T visitExpMod(ExpMod exp, S arg) throws VisitException,NoSuchMethodException;//mod
+    public T visitExpPow(ExpPow exp, S arg) throws VisitException,NoSuchMethodException;//exponent
+    public T visitExpBit(ExpBit exp, S arg) throws VisitException,NoSuchMethodException;//bitwise operators
     public T visitExpLit(ExpLitInt exp, S arg) throws VisitException,NoSuchMethodException;//literal interger
     public T visitExpDouble(ExpLitDouble exp, S arg) throws VisitException,NoSuchMethodException;//literal double
     
