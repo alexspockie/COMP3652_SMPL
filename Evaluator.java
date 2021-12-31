@@ -535,5 +535,11 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 
 		return val.negate();
 	}
+
+	@Override
+	public SMPLDataType visitExpLitBool(ExpLitBool exp, Environment arg) throws VisitException, NoSuchMethodException {
+		
+		return new SMPLBoolean(exp.getVal());
+	}
 }
 // might possibly need to add Booleans

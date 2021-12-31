@@ -278,13 +278,7 @@ logExpN ::= NOT logExp:e {: RESULT = new ExpComp(e,e,"NOT"); :}|
 
 logFactor ::= logExp:e {: RESULT = e; :}|
 			LPAREN logExpO:e RPAREN {: RESULT = e; :}|
-			BOOLLIT:b {: 
-			Exp result;
-			if (b)
-				result = new ExpLitDouble(1D);
-			else
-				result = new ExpLitDouble(0D);
-			RESULT = result; :};
+			BOOLLIT:b {: RESULT = new ExpLitBool(b);:};
 
 /*ifThen ::= IF logExp:l THEN expression:e ELSE expression:e2 END {:
 			ArrayList<Exp> result = new ArrayList<>();
@@ -379,6 +373,7 @@ term ::= term:t MUL factor:f {:
 
 factor ::= TILDE atom:a {:
 			RESULT = new ExpBit(a,a,BitwiseOp.NOT); :} |
+			LPAREN MINUS exptop:e RPAREN {: RESULT =new ExpNegate(e); :} |
 		atom:a  POW factor:f {:
 			RESULT = new ExpPow(a,f); :}|
 		atom:a {: RESULT = a; :};
