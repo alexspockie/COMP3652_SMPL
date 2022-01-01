@@ -63,11 +63,11 @@ alphanum = {alpha}|[0-9]
 
 //ndbegin = [^\(\)\[\]\{\}\"\',:#0-9]
 
-ndbegin = [a-zA-Z\+\-\*\/\%\^\?\.\!]
+ndbegin = [a-zA-Z\+\-\*\/\%\^\?\.\!_]
 
-ndmiddle = [a-zA-Z\+\-\*\/\%\^\?\.\!\#]
+ndmiddle = [a-zA-Z\+\-\*\/\%\^\?\.\!\#_]
 
-ban = [a-zA-Z0-9\+\-\*\/\%\^\?\.\!\#]
+ban = [a-zA-Z0-9\+\-\*\/\%\^\?\.\!\#_]
 
 
 var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
@@ -181,7 +181,7 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 	       return new Symbol(sym.VAR, yytext());
 		}
 
-<STRING> (\\[t\n]) | ([A-Za-z0-9/';:.,><[]{}=+-_|*&%$#@!~`]|\^) | {cc} { 
+<STRING> (\\[t\n]) | ([A-Za-z0-9/';:.,><[]{}=+-_|*&%$#@!~`]|\^) | \s { 
 	// unsure if more should be done with this
 		buffer.append(yytext());
 	}

@@ -127,18 +127,20 @@ non terminal Exp factor;
 non terminal Exp atom; //lowest level expression
 non terminal empty;
 non terminal Exp builtin;
+non terminal Exp expOrLog;
 
 
 /* Grammar rules */
 
 program ::= stmtList:s {: RESULT = new ArithProgram(s); :}|
-	 exptop:e {: Statement s = new Statement(e);
-	 			StmtSequence ss = new StmtSequence(s);
-	 			RESULT = new ArithProgram(ss); :}|
-	 	stmtList:lst exptop:e{: 
-			Statement s = new Statement(e);
-			lst.add(s);
-			RESULT = new ArithProgram(lst); :};
+			expOrLog:e {: 
+				Statement s = new Statement(e);
+				StmtSequence ss = new StmtSequence(s);
+				RESULT = new ArithProgram(ss); :}|
+			stmtList:lst exptop:e{: 
+				Statement s = new Statement(e);
+				lst.add(s);
+				RESULT = new ArithProgram(lst); :};
 
 stmtList ::= stmtList:lst stmt:s {:
 		lst.add(s); 
@@ -149,9 +151,12 @@ stmtList ::= stmtList:lst stmt:s {:
 		:};
 
 stmt ::= definition:d SEMI{: RESULT = d; :}|
-	  exptop:e SEMI {: RESULT = new Statement(e); :} |
+	  expOrLog:e SEMI {: RESULT = new Statement(e); :} |
 	 def:d SEMI{:RESULT = d; :}| ////expression:e {: RESULT = new Statement(e); :}SEMI|
 	 print:p SEMI {: RESULT = new Statement(p); :};
+
+expOrLog ::= exptop:e {: RESULT = e; :}|
+				logExpO:e {: RESULT = e; :};
 
 exptop ::= expo:e {: RESULT = e; :}| 
 			expc:e {: RESULT = e; :}|
@@ -180,12 +185,9 @@ builtin ::= list:l {: RESULT = l; :} |
 			PAIR LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpPair(e1, e2); :} |
 			CAR LPAREN exptop:e1 RPAREN {: RESULT = new ExpCar(e1); :} |
 			CDR LPAREN exptop:e1 RPAREN {: RESULT = new ExpCdr(e1); :} |
-			ISPAIR LPAREN exptop:e1 RPAREN {: RESULT = new ExpIsPair(e1); :} |
 			SIZE LPAREN exptop:e1 RPAREN{: RESULT = new ExpGetSize(e1); :} |
 			vector:v {: RESULT = v; :} |
 			vectorCall:vc {: RESULT = vc; :} |
-			ISEQ LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEq(e1, e2);  :} |
-			ISEQV LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEqv(e1, e2); :} |
 			SUBSTR LPAREN exptop:e1 COMMA exptop:e2 COMMA exptop:e3 RPAREN {: RESULT = new ExpSubstr(e1, e2, e3); :};
 
 
@@ -214,7 +216,8 @@ bindList ::= bindList:blst COMMA bind:b {: blst.add(b);
 				RESULT = result; :};
 
 // used in case definintion
-pred ::= logExpO:l COLON exptop:e SEMI{: RESULT = new ExpCClause(l,e); :} | //changed logExp to logExpO
+pred ::= logExpO:l COLON exptop:e SEMI{: RESULT = new ExpCClause(l,e); :} | 
+		VAR:l COLON exptop:e SEMI{: RESULT = new ExpCClause(new ExpVar(l),e); :} | 
 		ELSE COLON exptop:e SEMI{: RESULT = new ExpCClause(e); :};
 
 predList ::= predList:plst pred:p {: plst.add(p);
@@ -276,9 +279,12 @@ logExpA ::= logExpA:e1 AND logExpN:e2 {: RESULT = new ExpComp(e1,e2,"AND"); :}|
 logExpN ::= NOT logExp:e {: RESULT = new ExpComp(e,e,"NOT"); :}|
 			logFactor:e {: RESULT = e; :};
 
-logFactor ::= logExp:e {: RESULT = e; :}|
-			LPAREN logExpO:e RPAREN {: RESULT = e; :}|
-			BOOLLIT:b {: RESULT = new ExpLitBool(b);:};
+logFactor ::= logExp:e {: RESULT = e; :} |
+			LPAREN logExpO:e RPAREN {: RESULT = e; :} |
+			BOOLLIT:b {: RESULT = new ExpLitBool(b);:} | 
+			ISPAIR LPAREN exptop:e1 RPAREN {: RESULT = new ExpIsPair(e1); :} |
+			ISEQ LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEq(e1, e2);  :} |
+			ISEQV LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEqv(e1, e2); :} ;
 
 /*ifThen ::= IF logExp:l THEN expression:e ELSE expression:e2 END {:
 			ArrayList<Exp> result = new ArrayList<>();
@@ -293,28 +299,44 @@ logFactor ::= logExp:e {: RESULT = e; :}|
 ifTheno ::= IF logExpO:l THEN exptop:e {:				//changed logExp to logExpO
 			ArrayList<Exp> result = new ArrayList<>(); 
 				result.add(e);
-				RESULT = new ExpIfThen(result,l);:}|
+				RESULT = new ExpIfThen(result,l);:} |
 			IF logExpO:l THEN expc:e ELSE expo:e2 {:
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				result.add(e2);
-				RESULT = new ExpIfThen(result,l);:}; //open
-
-ifThenc ::= IF logExpO:l THEN expc:e ELSE expc:e2 {: 	//changed logExp to logExpO
+				RESULT = new ExpIfThen(result,l);:} |
+			IF VAR:l THEN exptop:e {:				//changed logExp to logExpO
+			ArrayList<Exp> result = new ArrayList<>(); 
+				result.add(e);
+				RESULT = new ExpIfThen(result,new ExpVar(l));:} |
+			IF VAR:l THEN expc:e ELSE expo:e2 {:
 			ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				result.add(e2);
-				RESULT = new ExpIfThen(result,l);:}; //closed
+				RESULT = new ExpIfThen(result,new ExpVar(l));:}; //open
+
+ifThenc ::= IF logExpO:l THEN expc:e ELSE expc:e2 {: 	//changed logExp to logExpO
+				ArrayList<Exp> result = new ArrayList<>();
+				result.add(e);
+				result.add(e2);
+				RESULT = new ExpIfThen(result,l);:} |
+			IF VAR:l THEN expc:e ELSE expc:e2 {: 	//changed logExp to logExpO
+				ArrayList<Exp> result = new ArrayList<>();
+				result.add(e);
+				result.add(e2);
+				RESULT = new ExpIfThen(result, new ExpVar(l));:}; //closed
 
 case ::= CASE LBRACE predList:plst RBRACE {: RESULT = new ExpCase(plst); :};
 
-expSeq ::= LBRACE argList:alst RBRACE {: RESULT = new ExpSequence(alst); :};
+expSeq ::= LBRACE stmtList:alst RBRACE {: RESULT = alst; :};
 
 mulExp ::= LPAREN argList:alst RPAREN {: RESULT = new MultiValExp(alst); :};
 
-def ::= DEF VAR:v exptop:e {: RESULT = new StmtExpDefn(v,e); :};
+def ::= DEF VAR:v expOrLog:e {: RESULT = new StmtExpDefn(v,e); :};
 				
-definition ::= VAR:v ASSIGN exptop:e {:
+definition ::= VAR:v ASSIGN expOrLog:e {:
+		   RESULT = new StmtDefinition(v, e); :} |
+		   vectorCall:v ASSIGN expOrLog:e {:
 		   RESULT = new StmtDefinition(v, e); :};/*|
 			paramList:plst ASSIGN argList:alst {: RESULT = null; :}*/
 
@@ -387,6 +409,7 @@ atom ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
 	   case:c {: RESULT = c; :}|
 	   let:l {: RESULT = l; :}|
 	   read:r {: RESULT = r; :} |
-	   builtin:b {: RESULT = b; :};
+	   builtin:b {: RESULT = b; :} |
+	   expSeq:seq {: RESULT =seq; :};
 
 empty ::= ;

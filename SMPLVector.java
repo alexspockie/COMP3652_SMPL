@@ -4,9 +4,9 @@ import java.util.Arrays;
 /**
  * Represents vectors
  */
-public class SMPLVector extends SMPLDataType<ArrayList<? extends SMPLDataType>> {
+public class SMPLVector extends SMPLDataType<ArrayList<SMPLDataType>> {
 
-    public SMPLVector(ArrayList<? extends SMPLDataType> data) {
+    public SMPLVector(ArrayList<SMPLDataType> data) {
         super(data, true);
     }
 
