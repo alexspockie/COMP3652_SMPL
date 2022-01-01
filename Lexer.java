@@ -908,7 +908,6 @@ public class Lexer implements java_cup.runtime.Scanner {
           case 107: break;
           case 30: 
             { // unsure if more should be done with this
-		System.out.println(yytext());
 		buffer.append(yytext());
             } 
             // fall through
@@ -1142,8 +1141,6 @@ public class Lexer implements java_cup.runtime.Scanner {
           case 153: break;
           case 76: 
             { char cu = (char) Integer.parseInt(yytext().substring(2), 16);
-	System.out.println("HELP");
-	System.out.println(cu);
 	buffer.append(cu);
             } 
             // fall through

@@ -95,6 +95,7 @@ non terminal ArrayList<String> paramList;
 non terminal ArrayList<String> paramListE;
 non terminal ArrayList<Exp> argList;
 non terminal ArrayList<Exp> argListE;
+non terminal ArrayList<Exp> multiArgList;
 non terminal ExpBind bind;
 non terminal ArrayList<ExpBind> bindList;
 non terminal ExpCClause pred;
@@ -190,7 +191,6 @@ builtin ::= list:l {: RESULT = l; :} |
 			vectorCall:vc {: RESULT = vc; :} |
 			SUBSTR LPAREN exptop:e1 COMMA exptop:e2 COMMA exptop:e3 RPAREN {: RESULT = new ExpSubstr(e1, e2, e3); :};
 
-
 paramList ::= paramList:plst COMMA VAR:v {:
 		plst.add(v);
 			RESULT = plst; :} |
@@ -200,8 +200,11 @@ paramList ::= paramList:plst COMMA VAR:v {:
 				RESULT = result;
 			:};
 
-paramListE ::= paramList:pl {:RESULT=pl; :} | empty {: ArrayList<String> result = new ArrayList<>();
-				RESULT = result; :};
+paramListE ::= paramList:pl {:RESULT=pl; :} | 
+				empty {: 
+					ArrayList<String> result = new ArrayList<>();
+					RESULT = result; 
+				:};
 
 //used in let definition
 bind ::= VAR:v EQUAL exptop:e {: RESULT = new ExpBind(v,e); :};
@@ -227,12 +230,12 @@ predList ::= predList:plst pred:p {: plst.add(p);
 				result.add(p);
 				RESULT = result; :};
 
-list ::= LBRACKET argList:alst RBRACKET {: RESULT = new ExpList(alst); :} |
-		LIST LPAREN argList:alst RPAREN {: RESULT = new ExpList(alst); :} |
+list ::= LBRACKET argListE:alst RBRACKET {: RESULT = new ExpList(alst); :} |
+		LIST LPAREN argListE:alst RPAREN {: RESULT = new ExpList(alst); :} |
 		ELIST {: RESULT = new ExpList(); :}; // add other list form //fix rewsult
 //make new class and change into other smpl list when evaluating?
 
-vector ::= LBRACKET COLON argList:alst COLON RBRACKET {: RESULT = new ExpVector(alst); :}|
+vector ::= LBRACKET COLON argListE:alst COLON RBRACKET {: RESULT = new ExpVector(alst); :}|
 			LBRACKET sizeList:slst RBRACKET{: RESULT = null; :};
 
 size ::= exptop:e1 COLON exptop:e2 {: RESULT = new ExpSize(e1,e2); :};
@@ -348,7 +351,7 @@ case ::= CASE LBRACE predList:plst RBRACE {: RESULT = new ExpCase(plst); :};
 
 expSeq ::= LBRACE stmtList:alst RBRACE {: RESULT = alst; :};
 
-mulExp ::= LPAREN argList:alst RPAREN {: RESULT = new MultiValExp(alst); :};
+mulExp ::= LPAREN multiArgList:alst RPAREN {: RESULT = new MultiValExp(alst); :};
 
 def ::= DEF VAR:v expOrLog:e {: RESULT = new StmtExpDefn(v,e); :};
 				
@@ -371,6 +374,10 @@ comment ::= LCOM STRING NL{:RESULT = null; :}|
 			BCOMS STRING BCOME {:RESULT = null; :};//need to be changed from null
 
 /* End of new keyword functions*/
+multiArgList ::= argList:lst COMMA exptop:e {: 
+			lst.add(e);
+			RESULT = lst;
+	:};
 
 argList ::= argList:alst COMMA exptop:e {:
 		alst.add(e);
@@ -379,14 +386,16 @@ argList ::= argList:alst COMMA exptop:e {:
 				ArrayList<Exp> result = new ArrayList<>();
 				result.add(e);
 				RESULT = result;
-			:} | 
-			{: ArrayList<Exp> result = new ArrayList<>();
-				RESULT = result; :};
+			:};
 
 
-argListE ::= argList:al {:RESULT=al;:} ;
+argListE ::= argList:al {:RESULT=al;:} | 
+			empty {: 
+				ArrayList<Exp> result = new ArrayList<>();
+				RESULT = result; 
+			:};
 
-funCall ::= VAR:v LPAREN argList:ae RPAREN {:
+funCall ::= VAR:v LPAREN argListE:ae RPAREN {:
 			RESULT = new ExpFunCall(v,ae); :};//|
 			//LPAREN proc:p RPAREN LPAREN argList:ae RPAREN {: RESULT = null; :}|
 			//LPAREN funCall:fc RPAREN LPAREN argList:ae RPAREN {: RESULT = null; :};
@@ -430,6 +439,7 @@ atom ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
 	   let:l {: RESULT = l; :}|
 	   read:r {: RESULT = r; :} |
 	   builtin:b {: RESULT = b; :} |
-	   expSeq:seq {: RESULT =seq; :};
+	   expSeq:seq {: RESULT =seq; :} |
+	   mulExp:mul {: RESULT = mul; :};
 
 empty ::= ;

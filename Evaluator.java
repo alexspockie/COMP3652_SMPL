@@ -65,11 +65,11 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		} else {
 			try {
 
-				SMPLVector vec = SMPLVector.class.cast(sd.getExpVecCall().id.visit(this, env));
+				SMPLOrderedMutable vec = SMPLOrderedMutable.class.cast(sd.getExpVecCall().id.visit(this, env));
 
 				vec.getValue().set(SMPLInt.class.cast(sd.getExpVecCall().num.visit(this, env)).getValue(), result);
-			} catch (VisitException e) {
-				throw new VisitException(e.getMessage());
+			} catch (Exception e) {
+				throw new VisitException(e.getMessage(), e);
 			}
 		}
 		return result;
@@ -94,15 +94,6 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		return new SMPLFloat(0d);
 	}
 
-	/*
-	 * public SMPLDataType visitStmtFunDefn(StmtFunDefn fd, Environment env)
-	 * throws VisitException, NoSuchMethodException {
-	 * // to be implemented
-	 * Closure close = new Closure(fd,env);
-	 * env.put(fd.getVar(),new SMPLProcedure(close));
-	 * return new SMPLFloat(0D);// add return type
-	 * }
-	 */
 	public SMPLDataType visitExpProcedure(ExpProcedure proc, Environment env)
 			throws VisitException, NoSuchMethodException {
 		Closure close = new Closure(proc, env);
@@ -384,7 +375,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		for (int i = 0; i < exps.size(); i++) {
 			result.add(exps.get(i).visit(this, arg));
 		}
-		return new SMPLList(result); // prints a tuple of values?
+		return new SMPLTuple(result); // prints a tuple of values?
 		// return null;//return a list
 	}
 
@@ -462,11 +453,11 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		try {
 
 			ExpVar id = vc.getId();
-			SMPLVector vec;
+			SMPLOrdered vec;
 			if (!vc.hasVector()) {
-				vec = SMPLVector.class.cast(id.visit(this, arg));
+				vec = SMPLOrdered.class.cast(id.visit(this, arg));
 			} else {
-				vec = SMPLVector.class.cast(vc.getVec().visit(this, arg));
+				vec = SMPLOrdered.class.cast(vc.getVec().visit(this, arg));
 			}
 
 			ArrayList<SMPLDataType> data = vec.getValue();
@@ -512,11 +503,13 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	@Override
 	public SMPLDataType visitExpGetSize(ExpGetSize exp, Environment arg)
 			throws VisitException, NoSuchMethodException {
-		if (exp.getSubTree(0).visit(this, arg).getClass() == SMPLVector.class) {
-			SMPLVector p = SMPLVector.class.cast(exp.getSubTree(0).visit(this, arg));
+				SMPLDataType res = exp.getSubTree(0).visit(this, arg);
+		if (res instanceof SMPLVector) {
+			SMPLVector p = SMPLVector.class.cast(res);
 			return new SMPLInt(p.getValue().size());
 		} else {
-			throw new NoSuchMethodException("Builtin function size only accepts SMPL vectors");
+			throw new NoSuchMethodException(
+					"Builtin function size only accepts SMPL vectors; type " + res.toTag() + " was passed in");
 		}
 	}
 
@@ -543,7 +536,8 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		if (e1.isCompound == true && e2.isCompound) {
 			if ((e1.getClass() == SMPLPair.class && e2.getClass() == SMPLPair.class)
 					|| (e1.getClass() == SMPLList.class && e2.getClass() == SMPLList.class)
-					|| (e1.getClass() == SMPLVector.class && e2.getClass() == SMPLVector.class)) {
+					|| (e1.getClass() == SMPLVector.class && e2.getClass() == SMPLVector.class)
+					|| (e1.getClass() == SMPLTuple.class && e2.getClass() == SMPLTuple.class)) {
 				return new SMPLBoolean(e1.getValue().equals(e2.getValue()));
 			} else {
 				throw new NoSuchMethodException(
