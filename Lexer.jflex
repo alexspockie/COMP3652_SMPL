@@ -168,14 +168,24 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 			return new Symbol(sym.FLOAT, new Double(yytext()));
 			}
 
-<YYINITIAL> (#c[A-Za-z]) | (#c\\[n\\t]) {
-	String c = yytext();
-	System.out.println(String.format("%s %d", c, c.length()));
-	return new Symbol(sym.CHAR, c.substring(2).charAt(0));}
+<YYINITIAL> #c[A-Za-z] {
+	return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
 
-<YYINITIAL> #u[A-F0-9]{4} {
-	String u = "0x"+yytext().substring(2);
-	return new Symbol(sym.CHAR, Character.toChars(Integer.parseInt(u, 16)));}
+<YYINITIAL> #c\\[\\] {
+	return new Symbol(sym.CHAR, '\\');
+}
+
+<YYINITIAL> #c\\[n] {
+	return new Symbol(sym.CHAR, '\n');
+}
+
+<YYINITIAL> #c\\[t] {
+	return new Symbol(sym.CHAR, '\t');
+}
+
+<YYINITIAL> #u[A-Fa-f0-9]{4} {
+	char cu = (char) Integer.parseInt(yytext().substring(2), 16);
+	return new Symbol(sym.CHAR, cu);}
 
 
 <YYINITIAL> \" {
@@ -188,7 +198,24 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 	       return new Symbol(sym.VAR, yytext());
 		}
 
-<STRING> (\\[t\\n]) | ([A-Za-z0-9/';:.,><[]{}=+-_|*&%$#@!~`]|\^) | \s { 
+<STRING> \\u[A-Fa-f0-9]{4} {
+	char cu = (char) Integer.parseInt(yytext().substring(2), 16);
+	buffer.append(cu);
+}
+
+<STRING> \\\\ {
+	buffer.append('\\');
+}
+
+<STRING> \\n {
+	buffer.append('\n');
+}
+
+<STRING> \\t {
+	buffer.append('\t');
+}
+
+<STRING> ([A-Za-z0-9\/';:.,><\[\]{}=\+\-_\|\*&%\$#@!~`\^\(\)]|\s)+ { 
 	// unsure if more should be done with this
 		buffer.append(yytext());
 	}
