@@ -504,12 +504,12 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	public SMPLDataType visitExpGetSize(ExpGetSize exp, Environment arg)
 			throws VisitException, NoSuchMethodException {
 				SMPLDataType res = exp.getSubTree(0).visit(this, arg);
-		if (res instanceof SMPLVector) {
-			SMPLVector p = SMPLVector.class.cast(res);
+		if (res instanceof SMPLOrdered) {
+			SMPLOrdered p = SMPLOrdered.class.cast(res);
 			return new SMPLInt(p.getValue().size());
 		} else {
 			throw new NoSuchMethodException(
-					"Builtin function size only accepts SMPL vectors; type " + res.toTag() + " was passed in");
+					"Builtin function size only accepts SMPL ordered compound types; type " + res.toTag() + " was passed in");
 		}
 	}
 
