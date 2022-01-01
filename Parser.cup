@@ -414,7 +414,8 @@ term ::= term:t MUL factor:f {:
 factor ::= TILDE atom:a {:
 			RESULT = new ExpBit(a,a,BitwiseOp.NOT); :} |
 			LPAREN MINUS exptop:e RPAREN {: RESULT =new ExpNegate(e); :} |
-		atom:a  POW factor:f {:
+		atom:a AT factor:f {: RESULT = new ExpConcat(a,f); :} |
+		atom:a POW factor:f {:
 			RESULT = new ExpPow(a,f); :}|
 		atom:a {: RESULT = a; :};
 

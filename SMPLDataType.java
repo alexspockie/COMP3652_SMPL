@@ -169,6 +169,17 @@ abstract public class SMPLDataType<T> {
         throw new NoSuchMethodException("Logical operator not not allowed on type " + this.toTag());
     }
 
+    /**
+     * Invoked for the @ operator
+     * Modifies this list internally and returns a reference to this list.
+     * @return this list
+     * @throws NoSuchMethodException If this method is not allowed for this datatype
+     */
+    public SMPLList concat(SMPLDataType o) throws NoSuchMethodException {
+        throw new NoSuchMethodException(
+                "List concatenation not allowed between types " + this.toTag() + " and " + o.toTag());
+    }
+
     public String toTag() {
         return String.format("<%s> %s", getClass().toString(), data.toString());
     }

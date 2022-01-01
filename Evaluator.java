@@ -616,4 +616,9 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	public SMPLDataType visitExpLitChar(ExpLitChar exp, Environment arg) throws VisitException, NoSuchMethodException {
 		return new SMPLChar(exp.ch);
 	}
+
+	@Override
+	public SMPLDataType visitExpConcat(ExpConcat exp, Environment env) throws VisitException, NoSuchMethodException {
+		return exp.getLeft().visit(this, env).concat(exp.getRight().visit(this, env));
+	}
 }
