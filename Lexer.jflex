@@ -85,6 +85,8 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 <YYINITIAL>	{ws}	{
 			 // skip whitespace
 			}
+<YYINITIAL>	"."	{return new Symbol(sym.DOT);}
+
 <YYINITIAL>	"+"	{return new Symbol(sym.PLUS);}
 <YYINITIAL>	"-"	{return new Symbol(sym.MINUS);}
 <YYINITIAL>	"*"	{return new Symbol(sym.MUL);}
@@ -166,9 +168,14 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 			return new Symbol(sym.FLOAT, new Double(yytext()));
 			}
 
-<YYINITIAL> (#c[A-Za-z]) | (#c\\[n\\t]) {return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
+<YYINITIAL> (#c[A-Za-z]) | (#c\\[n\\t]) {
+	String c = yytext();
+	System.out.println(String.format("%s %d", c, c.length()));
+	return new Symbol(sym.CHAR, c.substring(2).charAt(0));}
 
-<YYINITIAL> #u[A-F0-9]{4} {return new Symbol(sym.CHAR, Character.toChars(Integer.parseInt(yytext().substring(2))));}
+<YYINITIAL> #u[A-F0-9]{4} {
+	String u = "0x"+yytext().substring(2);
+	return new Symbol(sym.CHAR, Character.toChars(Integer.parseInt(u, 16)));}
 
 
 <YYINITIAL> \" {
@@ -181,7 +188,7 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 	       return new Symbol(sym.VAR, yytext());
 		}
 
-<STRING> (\\[t\n]) | ([A-Za-z0-9/';:.,><[]{}=+-_|*&%$#@!~`]|\^) | \s { 
+<STRING> (\\[t\\n]) | ([A-Za-z0-9/';:.,><[]{}=+-_|*&%$#@!~`]|\^) | \s { 
 	// unsure if more should be done with this
 		buffer.append(yytext());
 	}

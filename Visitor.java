@@ -73,4 +73,6 @@ public interface Visitor<S, T> {
     public T visitExpNegate(ExpNegate exp, S arg) throws VisitException,NoSuchMethodException;
 
     public T visitExpLitBool(ExpLitBool exp, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpLitChar(ExpLitChar exp, S arg) throws VisitException,NoSuchMethodException;
 }

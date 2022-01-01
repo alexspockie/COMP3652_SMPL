@@ -313,4 +313,10 @@ public class ToScheme implements Visitor<Void, String> {
 		return null;
 	}
 
+	@Override
+	public String visitExpLitChar(ExpLitChar exp, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

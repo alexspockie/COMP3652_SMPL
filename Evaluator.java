@@ -103,25 +103,73 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	 * return new SMPLFloat(0D);// add return type
 	 * }
 	 */
-	public SMPLDataType visitExpProcedure(ExpProcedure proc, Environment env)// X
+	public SMPLDataType visitExpProcedure(ExpProcedure proc, Environment env)
 			throws VisitException, NoSuchMethodException {
-		// return new SMPLFloat(0d); //fix
 		Closure close = new Closure(proc, env);
-		return new SMPLProcedure(close); // FIX FOR ADDITIONAL forms of proc
+		return new SMPLProcedure(close);
 	}
 
 	public SMPLDataType visitExpFunCall(ExpFunCall fc, Environment env)
 			throws VisitException, NoSuchMethodException {// uses SMPLProcedure
-		// to be implemented
-		Closure close = SMPLProcedure.class.cast(env.get(fc.getVar())).getValue();
-		ExpProcedure fun = close.getProc(); // no longer have stmt fun def so we need to change
 
+		Closure close;
+		SMPLProcedure p;
+		try {
+			p = SMPLProcedure.class.cast(env.get(fc.getVar()));
+			close = p.getValue();
+		} catch (Exception e) {
+			throw new VisitException(
+					String.format("%s is not a procedure and cannot be called", env.get(fc.getVar()).toTag()), e);
+		}
+
+		ExpProcedure fun = close.getProc();
+		ProcForm form = fun.getForm();
 		ArrayList<String> params = fun.getParams();
+
+		// evaluate arguments passed
 		ArrayList<SMPLDataType> vals = new ArrayList<SMPLDataType>();
 		ArrayList<Exp> args = fc.getArgList();
-		for (int i = 0; i < args.size(); i++) {
-			vals.add(args.get(i).visit(this, env));
+
+		switch (form) {
+			case FORMAL:
+				if (args.size() != params.size()) {
+					throw new VisitException(
+							String.format("%s takes %d %s but %d %s passed", p.toTag(),
+									params.size(), params.size() == 1 ? "argument" : "arguments", args.size(),
+									args.size() == 1 ? "argument was" : "arguments were"));
+				} else {
+					for (int i = 0; i < args.size(); i++) {
+						vals.add(args.get(i).visit(this, env));
+					}
+				}
+
+				break;
+
+			case MIXED:
+				int j = 0;
+				for (j = 0; j < params.size() - 1; j++) {
+					vals.add(args.get(j).visit(this, env));
+				}
+
+				ArrayList<SMPLDataType> rest = new ArrayList<>();
+				if (args.size() > params.size() - 1) {
+					for (j = j; j < args.size(); j++) {
+						rest.add(args.get(j).visit(this, env));
+					}
+				}
+				vals.add(new SMPLList(rest));
+				break;
+
+			case VARARG:
+				ArrayList<SMPLDataType> vararg = new ArrayList<>();
+				for (int i = 0; i < args.size(); i++) {
+					vararg.add(args.get(i).visit(this, env));
+				}
+				vals.add(new SMPLList(vararg));
+				break;
+
 		}
+
 		Environment env2 = new Environment(close.getClosingEnv(), params, vals);
 		if (fun.getStatements() == null)
 			return fun.getExpression().visit(this, env2);
@@ -151,20 +199,21 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		return val1.logicalOr(val2);
 	}
 
-	public SMPLDataType visitExpIfThen(ExpIfThen exp, Environment env)// X
-
-			throws VisitException, NoSuchMethodException { // X
+	public SMPLDataType visitExpIfThen(ExpIfThen exp, Environment env)
+			throws VisitException, NoSuchMethodException {
 		// if (exp.getLog().visit(this,env).relationalCmp(Cmp.EQ, new
 		// SMPLFloat(1D)).getValue()) //get ExpCompare, visits it
-		if (SMPLBoolean.class.cast(exp.getLog().visit(this, env)).getValue()) // get ExpCompare, visits
-																				// it
-		{
-			return exp.getArgs().get(0).visit(this, env);
+		try {
+			if (SMPLBoolean.class.cast(exp.getLog().visit(this, env)).getValue()) // get ExpCompare, visits it
+			{
+				return exp.getArgs().get(0).visit(this, env);
+			}
+			if (exp.getArgs().size() > 1)
+				return exp.getArgs().get(1).visit(this, env);
+			return new SMPLFloat(0D); // this would return something
+		} catch (Exception e) {
+			throw new VisitException(e.getMessage(), e);
 		}
-		if (exp.getArgs().size() > 1)
-			return exp.getArgs().get(1).visit(this, env);
-		return new SMPLFloat(0D); // this would return something
-
 	}
 
 	public SMPLDataType visitExpAdd(ExpAdd exp, Environment env)
@@ -265,22 +314,26 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 
 	@Override
 	public SMPLDataType visitExpCall(ExpCall call, Environment arg) throws VisitException, NoSuchMethodException {
-		ArrayList<? extends SMPLDataType> val;
-		if (call.getL() == null) {
-			val = (ArrayList<? extends SMPLDataType>) call.getLst().visit(this, arg).getValue();// arguments
-		} else {
-			// search environment for list
-			val = (ArrayList<? extends SMPLDataType>) call.getL().visit(this, arg).getValue();// arguments
-		}
-		Closure close = SMPLProcedure.class.cast(call.getId().visit(this, arg)).getValue();// get closure
-		ExpProcedure fun = close.getProc();// get procedure
-		ArrayList<String> params = fun.getParams();
+		try {
+			ArrayList<SMPLDataType> val;
+			if (call.getL() == null) {
+				val = (ArrayList<SMPLDataType>) call.getLst().visit(this, arg).getValue();// arguments
+			} else {
+				// search environment for list
+				val = (ArrayList<SMPLDataType>) call.getL().visit(this, arg).getValue();// arguments
+			}
+			Closure close = SMPLProcedure.class.cast(call.getId().visit(this, arg)).getValue();// get closure
+			ExpProcedure fun = close.getProc();// get procedure
+			ArrayList<String> params = fun.getParams();
 
-		Environment env2 = new Environment(close.getClosingEnv(), params, val);
-		if (fun.getStatements() == null)
-			return fun.getExpression().visit(this, env2);
-		else
-			return fun.getStatements().visit(this, env2);
+			Environment env2 = new Environment(close.getClosingEnv(), params, val);
+			if (fun.getStatements() == null)
+				return fun.getExpression().visit(this, env2);
+			else
+				return fun.getStatements().visit(this, env2);
+		} catch (Exception e) {
+			throw new VisitException(e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -477,7 +530,8 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 		} else if (!e1.isCompound && !e2.isCompound) {
 			return new SMPLBoolean(e1.getValue().equals(e2.getValue()));
 		} else {
-			throw new NoSuchMethodException(e1 + " and " + e2 + " cannot be compared for ");
+			throw new NoSuchMethodException(
+					e1.toTag() + " and " + e2.toTag() + " cannot be compared for object equivalence");
 		}
 	}
 
@@ -493,13 +547,15 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 				return new SMPLBoolean(e1.getValue().equals(e2.getValue()));
 			} else {
 				throw new NoSuchMethodException(
-						e1 + " and " + e2 + " cannot be compared for structural equivalence due to type mismatch");
+						e1.toTag() + " and " + e2.toTag()
+								+ " cannot be compared for structural equivalence due to type mismatch");
 			}
 
 		} else if (!e1.isCompound && !e2.isCompound) {
 			return new SMPLBoolean(e1.getValue().equals(e2.getValue()));
 		} else {
-			throw new NoSuchMethodException(e1 + " and " + e2 + " cannot be compared for structural equivalence");
+			throw new NoSuchMethodException(
+					e1.toTag() + " and " + e2.toTag() + " cannot be compared for structural equivalence");
 		}
 	}
 
@@ -534,7 +590,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 			return new SMPLString(s.getValue().substring(start.getValue(), end.getValue()));
 
 		} catch (Exception e) {
-			throw e;
+			throw new VisitException(e.getMessage(), e);
 		}
 	}
 
@@ -553,8 +609,11 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 
 	@Override
 	public SMPLDataType visitExpLitBool(ExpLitBool exp, Environment arg) throws VisitException, NoSuchMethodException {
-
 		return new SMPLBoolean(exp.getVal());
 	}
+
+	@Override
+	public SMPLDataType visitExpLitChar(ExpLitChar exp, Environment arg) throws VisitException, NoSuchMethodException {
+		return new SMPLChar(exp.ch);
+	}
 }
-// might possibly need to add Booleans

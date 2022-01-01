@@ -9,13 +9,18 @@ public class SMPLChar extends SMPLIntegral<Character>{
 
 
     @Override
-    public SMPLNumber add(SMPLDataType o) throws NoSuchMethodException {
-        Double val = SMPLNumber.toJavaDouble(o);
+    public SMPLDataType add(SMPLDataType o) throws NoSuchMethodException {
+        try {
+            return super.add(o);
+        } catch (Exception e) {
 
-        if(o.getClass() == SMPLFloat.class){
-            return new SMPLFloat(val + data);
-        }else{
-            return new SMPLInt(Double.valueOf(val + data).intValue());
+            Double val = SMPLNumber.toJavaDouble(o);
+
+            if (o.getClass() == SMPLFloat.class) {
+                return new SMPLFloat(val + data);
+            } else {
+                return new SMPLInt(Double.valueOf(val + data).intValue());
+            }
         }
     }
 
