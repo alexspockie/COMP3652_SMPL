@@ -7,14 +7,14 @@ import java.util.Arrays;
  * 
  * Not sure if this actually needs to be implemented as a list of SMPLPairs as described
  */
-public class SMPLList extends SMPLDataType<ArrayList<SMPLDataType>> {
+public class SMPLList extends SMPLVector {
 
     public SMPLList(ArrayList<SMPLDataType> data) {
-        super(data,true);
+        super(data);
     }
 
     public SMPLList(SMPLDataType ... data) {
-        super(new ArrayList<>(Arrays.asList(data)), true);
+        super(new ArrayList<>(Arrays.asList(data)));
     }
 
     @Override
@@ -22,7 +22,7 @@ public class SMPLList extends SMPLDataType<ArrayList<SMPLDataType>> {
         if (o.getClass() == SMPLList.class) {
             data.addAll(SMPLList.class.cast(o).getValue());
             return this;
-        }else{
+        }else {
             throw new NoSuchMethodException(o.toTag() + " is not a list");
         }
     }
