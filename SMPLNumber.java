@@ -8,43 +8,6 @@ abstract public class SMPLNumber<T> extends SMPLDataType<T> {
     }
 
     @Override
-    public SMPLNumber add(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Not implemented");
-    }
-
-    @Override
-    public SMPLNumber subtract(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Not implemented");
-    }
-
-    @Override
-    public SMPLNumber multiply(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Not implemented");
-    }
-
-    @Override
-    public SMPLNumber pow(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Not Implemented");
-    }
-
-    @Override
-    public SMPLNumber negate() throws NoSuchMethodException {
-        throw new NoSuchMethodException("Not Implemented");
-
-    }
-
-    @Override
-    public SMPLNumber divide(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Not Implemented");
-    }
-
-    @Override
-    public SMPLNumber mod(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException("Not Implemented");
-
-    }
-
-    @Override
     public SMPLBoolean relationalCmp(Cmp cmp, SMPLDataType o) throws NoSuchMethodException {
         return cmp.apply(this, o);
     }
@@ -55,7 +18,7 @@ abstract public class SMPLNumber<T> extends SMPLDataType<T> {
         } else if (n.getClass() == SMPLChar.class) {
             return ((SMPLChar) n).getValue();
         } else {
-            throw new NoSuchMethodException(n+ " is not an integer");
+            throw new NoSuchMethodException(n.toTag() + " is not an integer");
         }
     }
 
@@ -73,7 +36,7 @@ abstract public class SMPLNumber<T> extends SMPLDataType<T> {
         } else if (n.getClass() == SMPLFloat.class) {
             return ((SMPLFloat) n).getValue();
         } else {
-            throw new NoSuchMethodException(n +" is not a number");
+            throw new NoSuchMethodException(n.toTag() +" is not a number");
         }
     }
 

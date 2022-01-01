@@ -31,8 +31,12 @@ abstract public class SMPLDataType<T> {
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLDataType add(SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException(
-                "Operator + not allowed between types " + this.getClass() + " and " + o.getClass());
+        if ((this.getClass() == SMPLString.class) || (o.getClass() == SMPLString.class)) {
+            return new SMPLString(this.getValue().toString() + o.getValue().toString());
+        } else {
+            throw new NoSuchMethodException(
+                    "Operator + not allowed between types " + this.toTag() + " and " + o.toTag());
+        }
     }
 
     /**
@@ -44,7 +48,7 @@ abstract public class SMPLDataType<T> {
      */
     public SMPLNumber subtract(SMPLDataType o) throws NoSuchMethodException {
         throw new NoSuchMethodException(
-                "Operator - not allowed between types " + this.getClass() + " and " + o.getClass());
+                "Operator - not allowed between types " + this.toTag() + " and " + o.toTag());
     }
 
     /**
@@ -56,7 +60,7 @@ abstract public class SMPLDataType<T> {
      */
     public SMPLNumber multiply(SMPLDataType o) throws NoSuchMethodException {
         throw new NoSuchMethodException(
-                "Operator * not allowed between types " + this.getClass() + " and " + o.getClass());
+                "Operator * not allowed between types " + this.toTag() + " and " + o.toTag());
     }
 
     /**
@@ -68,7 +72,7 @@ abstract public class SMPLDataType<T> {
      */
     public SMPLNumber divide(SMPLDataType o) throws NoSuchMethodException {
         throw new NoSuchMethodException(
-                "Operator / not allowed between types " + this.getClass() + " and " + o.getClass());
+                "Operator / not allowed between types " + this.toTag() + " and " + o.toTag());
     }
 
     /**
@@ -80,7 +84,7 @@ abstract public class SMPLDataType<T> {
      */
     public SMPLNumber mod(SMPLDataType o) throws NoSuchMethodException {
         throw new NoSuchMethodException(
-                "Operator % not allowed between types " + this.getClass() + " and " + o.getClass());
+                "Operator % not allowed between types " + this.toTag() + " and " + o.toTag());
     }
 
     /**
@@ -92,7 +96,7 @@ abstract public class SMPLDataType<T> {
      */
     public SMPLNumber pow(SMPLDataType o) throws NoSuchMethodException {
         throw new NoSuchMethodException(
-                "Operator ^ not allowed between types " + this.getClass() + " and " + o.getClass());
+                "Operator ^ not allowed between types " + this.toTag() + " and " + o.toTag());
     }
 
     /**
@@ -102,17 +106,17 @@ abstract public class SMPLDataType<T> {
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLNumber negate() throws NoSuchMethodException {
-        throw new NoSuchMethodException("Operator - not allowed on type " + this.getClass());
+        throw new NoSuchMethodException("Operator - not allowed on type " + this.toTag());
     }
 
     // bitwise
 
     public SMPLInt bitwiseOp(BitwiseOp op, SMPLDataType o) throws NoSuchMethodException {
         if (o == null) {
-            throw new NoSuchMethodException("Bitwise operators not allowed on type " + this.getClass());
+            throw new NoSuchMethodException("Bitwise operators not allowed on type " + this.toTag());
         } else {
             throw new NoSuchMethodException(
-                    "Bitwise operators not allowed between type " + this.getClass() + " and type " + o.getClass());
+                    "Bitwise operators not allowed between type " + this.toTag() + " and type " + o.toTag());
         }
     }
 
@@ -127,7 +131,8 @@ abstract public class SMPLDataType<T> {
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLBoolean relationalCmp(Cmp cmp, SMPLDataType o) throws NoSuchMethodException {
-        throw new NoSuchMethodException( String.format(              "Comparison not allowed between types <%s> %s and <%s> %s", this.getClass(), this,  o.getClass(), o));
+        throw new NoSuchMethodException(
+                String.format("Comparison not allowed between types %s and %s", this.toTag(), o.toTag()));
     }
 
     /**
@@ -139,7 +144,7 @@ abstract public class SMPLDataType<T> {
      */
     public SMPLBoolean logicalAnd(SMPLDataType o) throws NoSuchMethodException {
         throw new NoSuchMethodException(
-                "Logical operator and not allowed between types " + this.getClass() + " and " + o.getClass());
+                "Logical operator and not allowed between types " + this.toTag() + " and " + o.toTag());
     }
 
     /**
@@ -151,7 +156,7 @@ abstract public class SMPLDataType<T> {
      */
     public SMPLBoolean logicalOr(SMPLDataType o) throws NoSuchMethodException {
         throw new NoSuchMethodException(
-                "Logical operator or not allowed between types " + this.getClass() + " and " + o.getClass());
+                "Logical operator or not allowed between types " + this.toTag() + " and " + o.toTag());
     }
 
     /**
@@ -161,7 +166,22 @@ abstract public class SMPLDataType<T> {
      * @throws NoSuchMethodException If this method is not allowed for this datatype
      */
     public SMPLBoolean logicalNot() throws NoSuchMethodException {
-        throw new NoSuchMethodException("Logical operator not not allowed on type " + this.getClass());
+        throw new NoSuchMethodException("Logical operator not not allowed on type " + this.toTag());
+    }
+
+    /**
+     * Invoked for the @ operator
+     * Modifies this list internally and returns a reference to this list.
+     * @return this list
+     * @throws NoSuchMethodException If this method is not allowed for this datatype
+     */
+    public SMPLList concat(SMPLDataType o) throws NoSuchMethodException {
+        throw new NoSuchMethodException(
+                "List concatenation not allowed between types " + this.toTag() + " and " + o.toTag());
+    }
+
+    public String toTag() {
+        return String.format("<%s> %s", getClass().toString(), data.toString());
     }
 
     @Override

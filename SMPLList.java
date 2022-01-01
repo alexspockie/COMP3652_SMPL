@@ -17,6 +17,15 @@ public class SMPLList extends SMPLDataType<ArrayList<SMPLDataType>> {
         super(new ArrayList<>(Arrays.asList(data)), true);
     }
 
+    @Override
+    public SMPLList concat(SMPLDataType o) throws NoSuchMethodException {
+        if (o.getClass() == SMPLList.class) {
+            data.addAll(SMPLList.class.cast(o).getValue());
+            return this;
+        }else{
+            throw new NoSuchMethodException(o.toTag() + " is not a list");
+        }
+    }
     
 }
     

@@ -85,6 +85,8 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 <YYINITIAL>	{ws}	{
 			 // skip whitespace
 			}
+<YYINITIAL>	"."	{return new Symbol(sym.DOT);}
+
 <YYINITIAL>	"+"	{return new Symbol(sym.PLUS);}
 <YYINITIAL>	"-"	{return new Symbol(sym.MINUS);}
 <YYINITIAL>	"*"	{return new Symbol(sym.MUL);}
@@ -166,9 +168,24 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 			return new Symbol(sym.FLOAT, new Double(yytext()));
 			}
 
-<YYINITIAL> (#c[A-Za-z]) | (#c\\[n\\t]) {return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
+<YYINITIAL> #c[A-Za-z] {
+	return new Symbol(sym.CHAR, yytext().substring(2).charAt(0));}
 
-<YYINITIAL> #u[A-F0-9]{4} {return new Symbol(sym.CHAR, Character.toChars(Integer.parseInt(yytext().substring(2))));}
+<YYINITIAL> #c\\[\\] {
+	return new Symbol(sym.CHAR, '\\');
+}
+
+<YYINITIAL> #c\\[n] {
+	return new Symbol(sym.CHAR, '\n');
+}
+
+<YYINITIAL> #c\\[t] {
+	return new Symbol(sym.CHAR, '\t');
+}
+
+<YYINITIAL> #u[A-Fa-f0-9]{4} {
+	char cu = (char) Integer.parseInt(yytext().substring(2), 16);
+	return new Symbol(sym.CHAR, cu);}
 
 
 <YYINITIAL> \" {
@@ -181,7 +198,24 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 	       return new Symbol(sym.VAR, yytext());
 		}
 
-<STRING> (\\[t\n]) | ([A-Za-z0-9/';:.,><[]{}=+-_|*&%$#@!~`]|\^) | \s { 
+<STRING> \\u[A-Fa-f0-9]{4} {
+	char cu = (char) Integer.parseInt(yytext().substring(2), 16);
+	buffer.append(cu);
+}
+
+<STRING> \\\\ {
+	buffer.append('\\');
+}
+
+<STRING> \\n {
+	buffer.append('\n');
+}
+
+<STRING> \\t {
+	buffer.append('\t');
+}
+
+<STRING> ([A-Za-z0-9\/';:.,><\[\]{}=\+\-_\|\*&%\$#@!~`\^\(\)]|\s)+ { 
 	// unsure if more should be done with this
 		buffer.append(yytext());
 	}

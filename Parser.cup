@@ -46,7 +46,7 @@ terminal PROC, CALL, LET, DEF, IF, THEN, ELSE, CASE, READ, READINT, PRINT, PRINT
 
 // special symbols
 terminal LPAREN, RPAREN, SEMI, COLON, AT, ELIST, DQUOTE;
-terminal LBRACE, RBRACE, COMMA, LBRACKET, RBRACKET;
+terminal LBRACE, RBRACE, COMMA, LBRACKET, RBRACKET, DOT;
 
 // arithmetic operators
 terminal PLUS, MINUS, MUL, DIV, MOD, POW, ASSIGN;
@@ -198,10 +198,10 @@ paramList ::= paramList:plst COMMA VAR:v {:
 				ArrayList<String> result = new ArrayList<>();
 				result.add(v);
 				RESULT = result;
-			:} | {: ArrayList<String> result = new ArrayList<>();
-				RESULT = result; :};  /* complete this */
+			:};
 
-paramListE ::= paramList:pl {:RESULT=pl; :} | empty;
+paramListE ::= paramList:pl {:RESULT=pl; :} | empty {: ArrayList<String> result = new ArrayList<>();
+				RESULT = result; :};
 
 //used in let definition
 bind ::= VAR:v EQUAL exptop:e {: RESULT = new ExpBind(v,e); :};
@@ -246,13 +246,24 @@ sizeList ::= sizeList:slst COMMA size:s {: slst.add(s);
 
 vectorCall ::= vector:v LBRACKET exptop:e RBRACKET	
 						{: RESULT = new ExpVecCall(v,e); :} | 
-			VAR:v LBRACKET exptop:e RBRACKET {: RESULT = new ExpVecCall(new ExpVar(v),e); :};	//needs a variable too		
+				VAR:v LBRACKET exptop:e RBRACKET {: 
+					RESULT = new ExpVecCall(new ExpVar(v),e); 
+				:};		
 
 /* New keyword functions */
-proc ::= PROC VAR:v stmtList:body {: RESULT = null; :} |
-		PROC LPAREN paramList:plst RPAREN exptop:e {: RESULT = new ExpProcedure(plst,e); :}|
-		PROC LPAREN paramList:plst RPAREN LBRACKET stmtList:body RBRACKET{: RESULT = null; :};// | 
-		//PROC LPAREN paramList:plst COMMA list:lst RPAREN stmtList:body SEMI{: RESULT = null; :};
+proc ::= PROC VAR:v exptop:body {: 
+			ArrayList<String> arr = new ArrayList<>();
+			arr.add(v);
+			RESULT = new ExpProcedure(arr,body, ProcForm.VARARG); 
+		:} |
+		PROC LPAREN paramListE:plst RPAREN exptop:e {: 
+			RESULT = new ExpProcedure(plst,e, ProcForm.FORMAL); 
+		:} |
+		PROC LPAREN paramList:plst DOT VAR:v RPAREN exptop:body {: 
+			plst.add(v);
+			RESULT = new ExpProcedure(plst,body, ProcForm.MIXED); 
+		:};
+		
 
 //proco ::= PROC LPAREN paramList:plst RPAREN expo:e {: RESULT = null; :};
 
@@ -271,12 +282,19 @@ logExp ::= exptop:e COMPARISON:c exptop:e2{:
 				RESULT = new ExpCompare(e,e2,c);:};
 
 logExpO ::= logExpO:e1 OR logExpA:e2 {: RESULT = new ExpComp(e1,e2,"OR"); :} |
+			logExpO:e1 OR VAR:e2 {: RESULT = new ExpComp(e1, new ExpVar(e2),"OR"); :} |
+			VAR:e1 OR logExpA:e2 {: RESULT = new ExpComp(new ExpVar(e1),e2,"OR"); :} |
+			VAR:e1 OR VAR:e2 {: RESULT = new ExpComp(new ExpVar(e1), new ExpVar(e2), "OR"); :} |
 			logExpA:e {: RESULT = e; :};
 
 logExpA ::= logExpA:e1 AND logExpN:e2 {: RESULT = new ExpComp(e1,e2,"AND"); :}|
+			logExpA:e1 AND VAR:e2 {: RESULT = new ExpComp(e1,new ExpVar(e2),"AND"); :}|
+			VAR:e1 AND logExpN:e2 {: RESULT = new ExpComp(new ExpVar(e1), e2, "AND"); :}|
+			VAR:e1 AND VAR:e2 {: RESULT = new ExpComp(new ExpVar(e1), new ExpVar(e2), "AND"); :} |
 			logExpN:e {: RESULT = e; :};
 
 logExpN ::= NOT logExp:e {: RESULT = new ExpComp(e,e,"NOT"); :}|
+			NOT VAR:v {: RESULT = new ExpComp(new ExpVar(v), new ExpVar(v), "NOT"); :}|
 			logFactor:e {: RESULT = e; :};
 
 logFactor ::= logExp:e {: RESULT = e; :} |
@@ -284,7 +302,7 @@ logFactor ::= logExp:e {: RESULT = e; :} |
 			BOOLLIT:b {: RESULT = new ExpLitBool(b);:} | 
 			ISPAIR LPAREN exptop:e1 RPAREN {: RESULT = new ExpIsPair(e1); :} |
 			ISEQ LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEq(e1, e2);  :} |
-			ISEQV LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEqv(e1, e2); :} ;
+			ISEQV LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpIsEqv(e1, e2); :};
 
 /*ifThen ::= IF logExp:l THEN expression:e ELSE expression:e2 END {:
 			ArrayList<Exp> result = new ArrayList<>();
@@ -396,7 +414,8 @@ term ::= term:t MUL factor:f {:
 factor ::= TILDE atom:a {:
 			RESULT = new ExpBit(a,a,BitwiseOp.NOT); :} |
 			LPAREN MINUS exptop:e RPAREN {: RESULT =new ExpNegate(e); :} |
-		atom:a  POW factor:f {:
+		atom:a AT factor:f {: RESULT = new ExpConcat(a,f); :} |
+		atom:a POW factor:f {:
 			RESULT = new ExpPow(a,f); :}|
 		atom:a {: RESULT = a; :};
 
@@ -404,6 +423,7 @@ atom ::= INT:ilit {: RESULT = new ExpLitInt(ilit); :} |
           FLOAT:ilit {:RESULT = new ExpLitDouble(ilit);:}|
           VAR:var {: RESULT = new ExpVar(var); :} |
 		  STRING:s {: RESULT = new ExpLitString(s); :} |
+		  CHAR:c {: RESULT = new ExpLitChar(c); :}|
 	   LPAREN exptop:e RPAREN {: RESULT = e; :}|
 	   funCall:fc {: RESULT = fc; :}|
 	   case:c {: RESULT = c; :}|

@@ -8,10 +8,15 @@ public class SMPLFloat extends SMPLNumber<Double> {
     }
 
     @Override
-    public SMPLNumber add(SMPLDataType o) throws NoSuchMethodException {
-        Double val = SMPLNumber.toJavaDouble(o);
+    public SMPLDataType add(SMPLDataType o) throws NoSuchMethodException {
+        try {
+            return super.add(o);
+        } catch (Exception e) {
 
-        return new SMPLFloat(val + data);
+            Double val = SMPLNumber.toJavaDouble(o);
+
+            return new SMPLFloat(val + data);
+        }
     }
 
     @Override

@@ -14,7 +14,7 @@ public class SMPLBoolean extends SMPLDataType<Boolean> {
 
         } catch (Exception e) {
 
-            throw new NoSuchMethodException(o + " is not a boolean value");
+            throw new NoSuchMethodException(o.toTag() + " is not a boolean value");
         }
     }
 
@@ -31,7 +31,7 @@ public class SMPLBoolean extends SMPLDataType<Boolean> {
 
         } catch (Exception e) {
 
-            throw new NoSuchMethodException(o + " is not a boolean value");
+            throw new NoSuchMethodException(o.toTag() + " is not a boolean value");
         }
     }
 
