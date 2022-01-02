@@ -1,0 +1,64 @@
+def quicksort proc(vec) {
+    def helper proc(start, end, v)  { 
+
+        def partition proc(s,e,v2) {
+
+            // traverse through all elements
+            // compare each element with pivot
+
+            l := s;
+
+            while l < size(v2) and v2[l] < pivot do {
+                l := l + 1;
+            };
+
+            r := e;
+
+            while r >= s and v2[r] >= pivot do {
+                r := r - 1;
+            };
+
+            // swap the pivot element with the greater element specified by i
+
+            if l < r then {
+                tmp := v2[l];
+                v2[l] := v2[r];
+                v2[r] := tmp;
+                partition(l,r,v2);
+            }
+            else {
+                tmp := v2[l];
+                v2[l] := v2[end + 1];
+                v2[end + 1] := tmp;
+                l;
+            };
+        };
+
+        if start < end then {
+            // choose the rightmost element as pivot
+            piv_index := (start + end) / 2;
+            pivot := v[piv_index];
+
+            tmp:= v[piv_index];
+            v[piv_index] := v[end];
+            v[end] := tmp;
+
+            end := end - 1;
+
+            p := partition(start,end,v);
+            helper(start, p - 1, v);
+            helper(p + 1, end + 1, v);
+        };
+
+        v;
+    };
+
+
+    helper(0, size(vec) - 1, vec);
+
+};
+    
+
+v := [: 8, 7, 6, 1, 0, 9 , 2 :];
+
+quicksort(v)

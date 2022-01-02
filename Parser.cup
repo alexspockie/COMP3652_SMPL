@@ -42,7 +42,7 @@ scan with {:
 
 /* Terminals (tokens returned by the scanner). */
 // keywords
-terminal PROC, CALL, LET, DEF, IF, THEN, ELSE, CASE, READ, READINT, PRINT, PRINTLN;
+terminal PROC, CALL, LET, DEF, IF, THEN, ELSE, CASE, READ, READINT, PRINT, PRINTLN, DO, FOR, WHILE, REPEAT, UNTIL, BREAK, CONTINUE;
 
 // special symbols
 terminal LPAREN, RPAREN, SEMI, COLON, AT, ELIST, DQUOTE;
@@ -52,7 +52,7 @@ terminal LBRACE, RBRACE, COMMA, LBRACKET, RBRACKET, DOT;
 terminal PLUS, MINUS, MUL, DIV, MOD, POW, ASSIGN;
 
 // logical operators
-terminal AND, OR, NOT;
+terminal AND, OR, NOT, IN;
 
 // bitwise operators
 terminal AMP, BAR, TILDE;
@@ -130,6 +130,13 @@ non terminal empty;
 non terminal Exp builtin;
 non terminal Exp expOrLog;
 
+non terminal Exp foro;
+non terminal Exp whileo;
+non terminal Exp repeato;
+non terminal Exp forc;
+non terminal Exp whilec;
+non terminal Exp repeatc;
+
 
 /* Grammar rules */
 
@@ -164,7 +171,10 @@ exptop ::= expo:e {: RESULT = e; :}|
 	   proc:p {: RESULT = p; :}|
 	   comment:c{: RESULT = c; :};//this replaced expression
 
-expo ::= ifTheno:i {: RESULT = i; :};
+expo ::= ifTheno:i {: RESULT = i; :} |
+		foro:e {: RESULT = e; :} |
+		whileo:e {: RESULT = e; :} |
+		repeato:e {: RESULT = e; :};
 
 expc ::= bitexp:e {: RESULT = e; :}|
 		ifThenc:i {: RESULT = i; :};
@@ -176,11 +186,31 @@ explist ::= explist:lst exptop:e{:
 				result.add(e);
 				RESULT = result; :};
 
-/*This function definintion no longer valid*/
-/*funDefn ::= VAR:v LPAREN paramList:pe RPAREN EQUAL LBRACE stmtList:s RBRACE {:
-			RESULT = new StmtFunDefn(v,pe,s); :} |
-		 VAR:v LPAREN paramList:pe RPAREN EQUAL expression:e SEMI {:
-			RESULT = new StmtFunDefn(v,pe,e); :}; */
+foro ::= FOR VAR:v IN exptop:iter DO exptop:body {:
+			RESULT = new ExpForIn(v, iter, body);
+			:} |
+		FOR VAR:v ASSIGN exptop:init SEMI logExpO:cond SEMI def:inc DO exptop:body {:
+			RESULT = new ExpFor(new StmtDefinition(v, init), cond, inc, body);
+		:} |
+		FOR VAR:v ASSIGN exptop:init SEMI logExpO:cond SEMI definition:inc DO exptop:body {:
+			RESULT = new ExpFor(new StmtDefinition(v, init), cond, inc, body);
+		:};
+
+whileo ::= WHILE logExpO:cond DO exptop:body {:
+				RESULT = new ExpWhile(cond,body);
+			:} |
+			WHILE VAR:v DO exptop:body {:
+				RESULT = new ExpWhile(new ExpVar(v),body);
+			:};
+
+repeato ::= REPEAT expOrLog:body UNTIL LPAREN logExpO:cond RPAREN {:
+				RESULT = new ExpRepeat(cond, body);
+			:} | 
+			REPEAT expOrLog:body UNTIL LPAREN VAR:v RPAREN {:
+				RESULT = new ExpRepeat(new ExpVar(v), body);
+			:};
+
+
 
 builtin ::= list:l {: RESULT = l; :} |
 			PAIR LPAREN exptop:e1 COMMA exptop:e2 RPAREN {: RESULT = new ExpPair(e1, e2); :} |

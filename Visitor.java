@@ -77,4 +77,13 @@ public interface Visitor<S, T> {
     public T visitExpLitChar(ExpLitChar exp, S arg) throws VisitException,NoSuchMethodException;
 
 	public T visitExpConcat(ExpConcat exp, S env) throws VisitException,NoSuchMethodException;
+
+    public T visitExpForIn(ExpForIn expForEach, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpFor(ExpFor expFor, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpWhile(ExpWhile expWhile, S arg) throws VisitException,NoSuchMethodException;
+
+    public T visitExpRepeat(ExpRepeat expRepeat, S arg) throws VisitException,NoSuchMethodException;
+
 }

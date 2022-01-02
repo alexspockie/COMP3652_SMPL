@@ -325,4 +325,29 @@ public class ToScheme implements Visitor<Void, String> {
 		return null;
 	}
 
+	@Override
+	public String visitExpForIn(ExpForIn expForEach, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpFor(ExpFor expFor, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpWhile(ExpWhile expWhile, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitExpRepeat(ExpRepeat expRepeat, Void arg) throws VisitException, NoSuchMethodException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }
