@@ -171,23 +171,31 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	public SMPLDataType visitExpCompare(ExpCompare exp, Environment env)// X
 			throws VisitException, NoSuchMethodException { // X
 		SMPLDataType val1, val2;
-		val1 = exp.getExpL().visit(this, env);
-		val2 = exp.getExpR().visit(this, env);
-		return exp.getC().apply(val1, val2);
+		try {
+			val1 = exp.getExpL().visit(this, env);
+			val2 = exp.getExpR().visit(this, env);
+			return exp.getC().apply(val1, val2);
+		} catch (IndexOutOfBoundsException e) {
+			return new SMPLBoolean(false);
+		}
 	}
 
 	public SMPLDataType visitExpComp(ExpComp exp, Environment env)
-			throws VisitException, NoSuchMethodException { // X
-		SMPLDataType val1, val2;
-		val1 = exp.getExpL().visit(this, env);
-		if (exp.getC() == "NOT") {
-			return val1.logicalNot();
+			throws VisitException, NoSuchMethodException {
+		try {
+			SMPLDataType val1, val2;
+			val1 = exp.getExpL().visit(this, env);
+			if (exp.getC() == "NOT") {
+				return val1.logicalNot();
+			}
+			val2 = exp.getExpR().visit(this, env);
+			if (exp.getC() == "AND") {
+				return val1.logicalAnd(val2);
+			}
+			return val1.logicalOr(val2);
+		} catch (IndexOutOfBoundsException e) {
+			return new SMPLBoolean(false);
 		}
-		val2 = exp.getExpR().visit(this, env);
-		if (exp.getC() == "AND") {
-			return val1.logicalAnd(val2);
-		}
-		return val1.logicalOr(val2);
 	}
 
 	public SMPLDataType visitExpIfThen(ExpIfThen exp, Environment env)
@@ -683,7 +691,7 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 			}
 
 			return res;
-			
+
 		} catch (Exception e) {
 			throw new VisitException(e.getMessage(), e);
 		}
