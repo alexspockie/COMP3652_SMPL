@@ -503,13 +503,14 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	@Override
 	public SMPLDataType visitExpGetSize(ExpGetSize exp, Environment arg)
 			throws VisitException, NoSuchMethodException {
-				SMPLDataType res = exp.getSubTree(0).visit(this, arg);
+		SMPLDataType res = exp.getSubTree(0).visit(this, arg);
 		if (res instanceof SMPLOrdered) {
 			SMPLOrdered p = SMPLOrdered.class.cast(res);
 			return new SMPLInt(p.getValue().size());
 		} else {
 			throw new NoSuchMethodException(
-					"Builtin function size only accepts SMPL ordered compound types; type " + res.toTag() + " was passed in");
+					"Builtin function size only accepts SMPL ordered compound types; type " + res.toTag()
+							+ " was passed in");
 		}
 	}
 
@@ -615,4 +616,77 @@ public class Evaluator implements Visitor<Environment, SMPLDataType> {
 	public SMPLDataType visitExpConcat(ExpConcat exp, Environment env) throws VisitException, NoSuchMethodException {
 		return exp.getLeft().visit(this, env).concat(exp.getRight().visit(this, env));
 	}
+
+	@Override
+	public SMPLDataType visitExpForIn(ExpForIn exp, Environment arg)
+			throws VisitException, NoSuchMethodException {
+		try {
+			SMPLDataType res = new SMPLFloat(0D);
+			SMPLOrdered iter = SMPLOrdered.class.cast(exp.getExpIter().visit(this, arg));
+
+			for (int i = 0; i < iter.getValue().size(); i++) {
+				arg.put(exp.getVar(), iter.getValue().get(i));
+
+				res = exp.getBody().visit(this, arg);
+			}
+
+			return res;
+		} catch (Exception e) {
+			throw new VisitException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public SMPLDataType visitExpFor(ExpFor exp, Environment arg) throws VisitException, NoSuchMethodException {
+		try {
+			SMPLDataType res = new SMPLFloat(0D);
+
+			exp.getExpInit().visit(this, arg);
+
+			while (SMPLBoolean.class.cast(exp.getExpCond().visit(this, arg)).getValue()) {
+				res = exp.getBody().visit(this, arg);
+				exp.getExpInc().visit(this, arg);
+			}
+
+			return res;
+
+		} catch (Exception e) {
+			throw new VisitException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public SMPLDataType visitExpWhile(ExpWhile exp, Environment arg) throws VisitException, NoSuchMethodException {
+		try {
+			SMPLDataType res = new SMPLFloat(0D);
+
+			while (SMPLBoolean.class.cast(exp.getExpCond().visit(this, arg)).getValue()) {
+				res = exp.getBody().visit(this, arg);
+			}
+			return res;
+
+		} catch (Exception e) {
+			throw new VisitException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public SMPLDataType visitExpRepeat(ExpRepeat exp, Environment arg)
+			throws VisitException, NoSuchMethodException {
+		try {
+			SMPLDataType res = new SMPLFloat(0D);
+
+			res = exp.getBody().visit(this, arg);
+
+			while (!SMPLBoolean.class.cast(exp.getExpCond().visit(this, arg)).getValue()) {
+				res = exp.getBody().visit(this, arg);
+			}
+
+			return res;
+			
+		} catch (Exception e) {
+			throw new VisitException(e.getMessage(), e);
+		}
+	}
+
 }

@@ -149,6 +149,13 @@ var = {ndbegin}+{ban}* | [0-9]+{ban}*{ndmiddle}+{ban}*
 <YYINITIAL>	"equal?" {return new Symbol(sym.ISEQ);}
 <YYINITIAL>	"substr" {return new Symbol(sym.SUBSTR);}
 
+<YYINITIAL>	"for" {return new Symbol(sym.FOR);}
+<YYINITIAL>	"do" {return new Symbol(sym.DO);}
+<YYINITIAL>	"while" {return new Symbol(sym.WHILE);}
+<YYINITIAL>	"in" {return new Symbol(sym.IN);}
+<YYINITIAL>	"until" {return new Symbol(sym.UNTIL);}
+<YYINITIAL>	"repeat" {return new Symbol(sym.REPEAT);}
+
 <YYINITIAL> "#t" { return new Symbol(sym.BOOLLIT, true);}
 <YYINITIAL> "#f" { return new Symbol(sym.BOOLLIT, false);}
 
